@@ -4,10 +4,10 @@ import { View, Image, StyleSheet } from "react-native";
 const LogoScreen = ({ navigation }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.replace("Auth"); // Ganti dengan halaman Auth setelah 2 detik
-    }, 2000); // 2000 ms = 2 detik
+      navigation.replace("Auth");
+    }, 2000);
 
-    return () => clearTimeout(timer); // Bersihkan timer saat komponen di-unmount
+    return () => clearTimeout(timer);
   }, [navigation]);
 
   return (

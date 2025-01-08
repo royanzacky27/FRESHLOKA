@@ -7,43 +7,46 @@ import {
   StyleSheet,
 } from "react-native";
 
-const RegisterScreen2 = ({ route, navigation }) => {
-  const { name, email, password } = route.params; // Mengambil data dari halaman sebelumnya
-  const [address, setAddress] = useState("");
-  const [phone, setPhone] = useState("");
-  const [gender, setGender] = useState("");
+const RegisterScreen1 = ({ navigation }) => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleCreate = () => {
-    // Logika untuk menyelesaikan pendaftaran
-    console.log({ name, email, password, address, phone, gender });
-    // Arahkan ke halaman Home setelah pendaftaran
-    navigation.replace("Home");
+  const handleContinue = () => {
+    navigation.navigate("RegisterScreen2", { name, email, password });
   };
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={styles.backButton}
+      >
+        <Text style={styles.backButtonText}>Back</Text>
+      </TouchableOpacity>
       <Text style={styles.title}>Freshloka</Text>
-      <Text style={styles.welcomeText}>We're glad to have you with us</Text>
+      <Text style={styles.welcomeText}>Hii, Welcome</Text>
       <TextInput
         style={styles.input}
-        placeholder="Alamat"
-        value={address}
-        onChangeText={setAddress}
+        placeholder="Name"
+        value={name}
+        onChangeText={setName}
       />
       <TextInput
         style={styles.input}
-        placeholder="No Phone"
-        value={phone}
-        onChangeText={setPhone}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
       />
       <TextInput
         style={styles.input}
-        placeholder="Gender"
-        value={gender}
-        onChangeText={setGender}
+        placeholder="Create Password"
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
       />
-      <TouchableOpacity style={styles.createButton} onPress={handleCreate}>
-        <Text style={styles.buttonText}>Create</Text>
+      <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
+        <Text style={styles.buttonText}>Continue</Text>
       </TouchableOpacity>
     </View>
   );
@@ -55,6 +58,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 20,
     justifyContent: "center",
+  },
+  backButton: {
+    position: "absolute",
+    top: 40,
+    left: 20,
+  },
+  backButtonText: {
+    color: "#2E7D32",
+    fontSize: 16,
   },
   title: {
     fontSize: 32,
@@ -77,7 +89,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     backgroundColor: "#f9f9f9",
   },
-  createButton: {
+  continueButton: {
     backgroundColor: "#2E7D32",
     paddingVertical: 15,
     borderRadius: 10,
@@ -90,4 +102,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RegisterScreen2;
+export default RegisterScreen1;

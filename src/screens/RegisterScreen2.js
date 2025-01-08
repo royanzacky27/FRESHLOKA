@@ -8,20 +8,24 @@ import {
 } from "react-native";
 
 const RegisterScreen2 = ({ route, navigation }) => {
-  const { name, email, password } = route.params; // Mengambil data dari halaman sebelumnya
+  const { name, email, password } = route.params;
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [gender, setGender] = useState("");
 
   const handleCreate = () => {
-    // Logika untuk menyelesaikan pendaftaran
     console.log({ name, email, password, address, phone, gender });
-    // Arahkan ke halaman Home setelah pendaftaran
     navigation.replace("Home");
   };
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={styles.backButton}
+      >
+        <Text style={styles.backButtonText}>Back</Text>
+      </TouchableOpacity>
       <Text style={styles.title}>Freshloka</Text>
       <Text style={styles.welcomeText}>We're glad to have you with us</Text>
       <TextInput
@@ -55,6 +59,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 20,
     justifyContent: "center",
+  },
+  backButton: {
+    position: "absolute",
+    top: 40,
+    left: 20,
+  },
+  backButtonText: {
+    color: "#2E7D32",
+    fontSize: 16,
   },
   title: {
     fontSize: 32,

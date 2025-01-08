@@ -2,56 +2,47 @@ import React from "react";
 import {
   View,
   Text,
-  StyleSheet,
-  FlatList,
   Image,
+  FlatList,
+  StyleSheet,
   TouchableOpacity,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons"; // Pastikan Anda menginstal expo vector icons
 
-const products = [
-  {
-    id: "1",
-    name: "Retinol Youth Renewal Night Cream",
-    price: "$84.00",
-    image: require("../assets/product1.png"), // Ganti dengan path gambar produk
-  },
-  {
-    id: "2",
-    name: "Glycolic Acid 7% Toning Solution",
-    price: "$14.50",
-    image: require("../assets/product2.png"), // Ganti dengan path gambar produk
-  },
-  {
-    id: "3",
-    name: "Solar Power",
-    price: "$96.00",
-    image: require("../assets/product3.png"), // Ganti dengan path gambar produk
-  },
-  {
-    id: "4",
-    name: "Natural Moisturizing Factors + HA",
-    price: "$6.50",
-    image: require("../assets/product4.png"), // Ganti dengan path gambar produk
-  },
+const categories = [
+  { id: "1", name: "Sayuran", image: require("../assets/sayuran.png") }, // Ganti dengan path gambar
+  { id: "2", name: "Buah", image: require("../assets/buah.png") }, // Ganti dengan path gambar
+  { id: "3", name: "Bumbu dapur", image: require("../assets/bumbu.png") }, // Ganti dengan path gambar
+  { id: "4", name: "Protein", image: require("../assets/protein.png") }, // Ganti dengan path gambar
 ];
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.welcomeText}>Welcome back, Sofia</Text>
+        <Text style={styles.headerText}>Belanja apa hari ini?</Text>
+        <View style={styles.iconContainer}>
+          <Ionicons name="search" size={24} color="black" style={styles.icon} />
+          <Ionicons name="cart" size={24} color="black" style={styles.icon} />
+        </View>
       </View>
+      <Image
+        source={require("../assets/banner.png")} // Ganti dengan path gambar banner
+        style={styles.banner}
+      />
+      <Text style={styles.categoryTitle}>Category</Text>
       <FlatList
-        data={products}
+        data={categories}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.productCard}>
-            <Image source={item.image} style={styles.productImage} />
-            <Text style={styles.productName}>{item.name}</Text>
-            <Text style={styles.productPrice}>{item.price}</Text>
+          <TouchableOpacity style={styles.categoryCard}>
+            <Image source={item.image} style={styles.categoryImage} />
+            <Text style={styles.categoryName}>{item.name}</Text>
           </TouchableOpacity>
         )}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.productList}
+        horizontal
+        contentContainerStyle={styles.categoryList}
+        showsHorizontalScrollIndicator={false} // Menyembunyikan scrollbar horizontal
       />
     </View>
   );
@@ -61,45 +52,52 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    padding: 20,
   },
   header: {
-    padding: 20,
-    backgroundColor: "#f8f8f8",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+    paddingTop: 40, // Menambahkan padding atas
   },
-  welcomeText: {
-    fontSize: 18,
+  headerText: {
+    fontSize: 24,
     fontWeight: "bold",
   },
-  productList: {
-    padding: 10,
+  iconContainer: {
+    flexDirection: "row",
   },
-  productCard: {
-    backgroundColor: "#fff",
+  icon: {
+    marginLeft: 15,
+    padding: 10, // Menambahkan padding pada ikon
+  },
+  banner: {
+    width: "1s0%",
+    height: 250,
     borderRadius: 10,
-    padding: 15,
-    marginVertical: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
-    elevation: 2,
+    marginBottom: 20,
   },
-  productImage: {
-    width: "100%",
-    height: 150,
-    borderRadius: 10,
-  },
-  productName: {
-    fontSize: 16,
+  categoryTitle: {
+    fontSize: 20,
     fontWeight: "bold",
-    marginTop: 10,
+    marginBottom: 10,
   },
-  productPrice: {
-    fontSize: 14,
-    color: "#888",
+  categoryList: {
+    justifyContent: "center", // Rata tengah
+  },
+  categoryCard: {
+    alignItems: "center",
+    marginHorizontal: 10, // Menambahkan margin horizontal untuk spasi
+  },
+  categoryImage: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+  },
+  categoryName: {
+    marginTop: 5,
+    textAlign: "center",
   },
 });
 

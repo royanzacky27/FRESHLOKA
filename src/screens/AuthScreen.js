@@ -1,49 +1,63 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
 
 const AuthScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    // Validasi sederhana
-    if (!email || !password) {
-      Alert.alert("Error", "Email dan password harus diisi!");
-      return;
-    }
-
-    // Logika login sederhana
+    // Logika login di sini
     if (email === "loka@gmail.com" && password === "pass123") {
-      // Jika login berhasil, arahkan ke halaman Home
-      navigation.navigate("Home");
+      navigation.replace("Home"); // Arahkan ke halaman Home setelah login
     } else {
-      Alert.alert("Error", "Email atau password salah!");
+      alert("Email atau password salah!");
     }
+  };
+
+  const handleForgotPassword = () => {
+    // Navigasi ke halaman Forgot Password
+    navigation.navigate("ForgotPassword"); // Pastikan Anda memiliki halaman ini
+  };
+
+  const handleSignUp = () => {
+    // Navigasi ke halaman Sign Up
+    navigation.navigate("RegisterScreen1");
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Text style={styles.title}>Freshloka</Text>
       <TextInput
-        placeholder="Email"
         style={styles.input}
+        placeholder="Email"
         value={email}
         onChangeText={setEmail}
       />
       <TextInput
+        style={styles.input}
         placeholder="Password"
         secureTextEntry
-        style={styles.input}
         value={password}
         onChangeText={setPassword}
       />
-      <Button title="Login" onPress={handleLogin} />
-      <Text
-        style={styles.registerText}
-        onPress={() => navigation.navigate("Register")}
-      >
-        Belum punya akun? Daftar
-      </Text>
+      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+        <Text style={styles.buttonText}>Login</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handleForgotPassword}>
+        <Text style={styles.forgotPassword}>Forgot Password?</Text>
+      </TouchableOpacity>
+      <View style={styles.footer}>
+        <Text>Don't have an account? </Text>
+        <TouchableOpacity onPress={handleSignUp}>
+          <Text style={styles.signUpText}>Sign Up</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -51,25 +65,50 @@ const AuthScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    backgroundColor: "#fff",
     padding: 20,
+    justifyContent: "center",
   },
   title: {
-    fontSize: 24,
-    marginBottom: 20,
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "#2E7D32",
     textAlign: "center",
+    marginBottom: 20,
   },
   input: {
-    height: 40,
+    height: 50,
     borderColor: "#ccc",
     borderWidth: 1,
-    marginBottom: 10,
-    paddingHorizontal: 10,
+    borderRadius: 10,
+    marginBottom: 15,
+    paddingHorizontal: 15,
+    backgroundColor: "#f9f9f9",
   },
-  registerText: {
-    marginTop: 20,
-    textAlign: "center",
-    color: "blue",
+  loginButton: {
+    backgroundColor: "#2E7D32",
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  forgotPassword: {
+    textAlign: "right",
+    color: "#2E7D32",
+    marginBottom: 20,
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  signUpText: {
+    color: "#2E7D32",
+    fontWeight: "bold",
   },
 });
 
