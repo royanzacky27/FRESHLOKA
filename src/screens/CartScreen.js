@@ -38,36 +38,75 @@ const CartScreen = () => {
     0
   );
 
+  const removeItem = (id) => {
+    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  };
+
+  const increaseQuantity = (id) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+      )
+    );
+  };
+
+  const decreaseQuantity = (id) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id && item.quantity > 1
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
+      )
+    );
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Keranjang Belanja</Text>
-      <Text style={styles.subtitle}>Pilih Waktu Pengiriman</Text>
-      <FlatList
-        data={cartItems}
-        renderItem={({ item }) => (
-          <View style={styles.cartItem}>
-            <Image source={item.image} style={styles.productImage} />
-            <View style={styles.itemDetails}>
-              <Text style={styles.productName}>{item.name}</Text>
-              <Text style={styles.productPrice}>
-                Rp. {item.price.toLocaleString()}/kg
-              </Text>
-              <Text style={styles.productQuantity}>
-                Jumlah: {item.quantity}
-              </Text>
-            </View>
+      {cartItems.length === 0 ? (
+        <Text style={styles.emptyCartText}>Keranjang Anda Kosong</Text>
+      ) : (
+        <>
+          <Text style={styles.subtitle}>Pilih Waktu Pengiriman</Text>
+          <FlatList
+            data={cartItems}
+            renderItem={({ item }) => (
+              <View style={styles.cartItem}>
+                <Image source={item.image} style={styles.productImage} />
+                <View style={styles.itemDetails}>
+                  <Text style={styles.productName}>{item.name}</Text>
+                  <Text style={styles.productPrice}>
+                    Rp. {item.price.toLocaleString()}/kg
+                  </Text>
+                  <View style={styles.quantityContainer}>
+                    <TouchableOpacity onPress={() => decreaseQuantity(item.id)}>
+                      <Text style={styles.quantityButton}>-</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.productQuantity}>
+                      Jumlah: {item.quantity}
+                    </Text>
+                    <TouchableOpacity onPress={() => increaseQuantity(item.id)}>
+                      <Text style={styles.quantityButton}>+</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                <TouchableOpacity onPress={() => removeItem(item.id)}>
+                  <Text style={styles.removeButton}>Hapus</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            keyExtractor={(item) => item.id}
+          />
+          <View style={styles.totalContainer}>
+            <Text style={styles.totalText}>
+              Total Belanja: Rp. {totalAmount.toLocaleString()}
+            </Text>
           </View>
-        )}
-        keyExtractor={(item) => item.id}
-      />
-      <View style={styles.totalContainer}>
-        <Text style={styles.totalText}>
-          Total Belanja: Rp. {totalAmount.toLocaleString()}
-        </Text>
-      </View>
-      <TouchableOpacity style={styles.checkoutButton}>
-        <Text style={styles.checkoutButtonText}>Checkout</Text>
-      </TouchableOpacity>
+          <TouchableOpacity style={styles.checkoutButton}>
+            <Text style={styles.checkoutButtonText}>Checkout</Text>
+          </TouchableOpacity>
+        </>
+      )}
     </View>
   );
 };
@@ -86,6 +125,11 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     marginBottom: 20,
+  },
+  emptyCartText: {
+    fontSize: 18,
+    textAlign: "center",
+    marginTop: 50,
   },
   cartItem: {
     flexDirection: "row",
@@ -113,6 +157,22 @@ const styles = StyleSheet.create({
   },
   productQuantity: {
     marginTop: 5,
+  },
+  quantityContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 5,
+  },
+  quantityButton: {
+    backgroundColor: "#2E7D32",
+    color: "#fff",
+    padding: 5,
+    borderRadius: 5,
+    marginHorizontal: 5,
+  },
+  removeButton: {
+    color: "red",
+    marginLeft: 10,
   },
   totalContainer: {
     marginTop: 20,

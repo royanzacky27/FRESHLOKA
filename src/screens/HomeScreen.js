@@ -111,22 +111,18 @@ const HomeScreen = ({ navigation }) => {
       <FlatList
         data={products}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.productCard}
-            onPress={() =>
-              navigation.navigate("ProductDetail", { product: item })
-            }
-          >
-            <Image source={item.image} style={styles.productImage} />
-            <Text style={styles.productName}>{item.name}</Text>
-            <Text style={styles.productPrice}>{item.price}</Text>
+          <View style={styles.productCard}>
             <TouchableOpacity
-              style={styles.addButton}
-              onPress={() => addToCart(item)}
+              onPress={() =>
+                navigation.navigate("ProductDetail", { product: item })
+              }
             >
-              <Text style={styles.addButtonText}>+</Text>
+              <Image source={item.image} style={styles.productImage} />
+              <Text style={styles.productName}>{item.name}</Text>
+              <Text style={styles.productPrice}>{item.price}</Text>
             </TouchableOpacity>
-          </TouchableOpacity>
+            {/* Hapus tombol "+" di sini */}
+          </View>
         )}
         keyExtractor={(item) => item.id}
         numColumns={2}
@@ -251,6 +247,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     alignItems: "center",
+    position: "relative",
   },
   productImage: {
     width: 100,
@@ -264,18 +261,6 @@ const styles = StyleSheet.create({
   productPrice: {
     marginTop: 5,
     color: "#2E7D32",
-  },
-  addButton: {
-    marginTop: 10,
-    backgroundColor: "#2E7D32",
-    borderRadius: 5,
-    padding: 5,
-    width: 30,
-    alignItems: "center",
-  },
-  addButtonText: {
-    color: "#fff",
-    fontSize: 18,
   },
   navigationContainer: {
     flexDirection: "row",

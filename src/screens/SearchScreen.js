@@ -9,6 +9,7 @@ import {
   Image,
 } from "react-native";
 
+// Daftar produk
 const products = [
   {
     id: "1",
@@ -46,44 +47,55 @@ const products = [
     price: "Rp. 20.000/kg",
     image: require("../assets/semangka.png"),
   },
-  // Tambahkan produk lainnya sesuai kebutuhan
 ];
 
+// Komponen utama SearchScreen
 const SearchScreen = ({ navigation }) => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(""); // State untuk query pencarian
+
+  // Filter produk berdasarkan query pencarian
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <View style={styles.container}>
+      {/* Input Pencarian */}
       <TextInput
         style={styles.searchInput}
         placeholder="Cari produk..."
         value={searchQuery}
         onChangeText={setSearchQuery}
       />
-      <FlatList
-        data={filteredProducts}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.productCard}
-            onPress={() =>
-              navigation.navigate("ProductDetail", { product: item })
-            }
-          >
-            <Image source={item.image} style={styles.productImage} />
-            <Text style={styles.productName}>{item.name}</Text>
-            <Text style={styles.productPrice}>{item.price}</Text>
-          </TouchableOpacity>
-        )}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.productList}
-      />
+
+      {/* Daftar Produk */}
+      {filteredProducts.length > 0 ? (
+        <FlatList
+          data={filteredProducts}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.productCard}
+              onPress={() =>
+                navigation.navigate("ProductDetail", { product: item })
+              }
+            >
+              <Image source={item.image} style={styles.productImage} />
+              <Text style={styles.productName}>{item.name}</Text>
+              <Text style={styles.productPrice}>{item.price}</Text>
+            </TouchableOpacity>
+          )}
+          keyExtractor={(item) => item.id} // Gunakan ID sebagai key
+          contentContainerStyle={styles.productList}
+        />
+      ) : (
+        // Pesan jika tidak ada produk ditemukan
+        <Text style={styles.noProductText}>Produk tidak ditemukan.</Text>
+      )}
     </View>
   );
 };
 
+// Gaya untuk komponen
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -102,6 +114,11 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     marginBottom: 20,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    backgroundColor: "#f9f9f9",
   },
   productImage: {
     width: 100,
@@ -109,12 +126,24 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   productName: {
-    marginTop: 5,
+    marginTop: 10,
+    fontSize: 16,
     fontWeight: "bold",
+    color: "#333",
   },
   productPrice: {
     marginTop: 5,
+    fontSize: 14,
     color: "#2E7D32",
+  },
+  productList: {
+    paddingBottom: 20,
+  },
+  noProductText: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "#888",
+    marginTop: 20,
   },
 });
 
