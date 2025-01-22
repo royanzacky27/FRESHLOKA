@@ -97,4 +97,30 @@ router.patch(
   }
 );
 
+router.get("/:id", authenticateToken, checkTokenBlacklist, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const product = await Product.findById(id);
+
+    if (!product) {
+      return res.status(404).json({
+        message: "Product not found",
+      });
+    }
+
+    return res.json({
+      message: "Successfully retrieved product details!",
+      data: product,
+    });
+  } catch (error) {
+    console.error("Error retrieving product details:", error);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+});
+
 module.exports = router;
