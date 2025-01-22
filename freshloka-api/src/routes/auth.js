@@ -116,4 +116,63 @@ router.get("/me", authenticateToken, checkTokenBlacklist, (req, res) => {
   }
 });
 
+router.post("/forgot-password/validate", async (req, res) => {
+  try {
+    const { email, phoneNumber } = req.body;
+
+    if (!email || !phoneNumber) {
+      return res
+        .status(400)
+        .json({ message: "Email and phone number are required" });
+    }
+
+    const user = await User.findOne({ email, phoneNumber });
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found with provided email and phone number",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Validation successful",
+      data: { id: user._id },
+    });
+  } catch (error) {
+    console.error("Error validating forgot password request:", error);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+});
+
+router.post("/forgot-password/change", async (req, res) => {
+  try {
+    const { id, newPassword, confirmNewPassword } = req.body;
+
+    if (!id || !newPassword || !confirmNewPassword) {
+      return res.status(400).json({
+        message: "User ID, new password, and confirm new password are required",
+      });
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    user.password = newPassword;
+    await user.save();
+
+    return res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+});
+
 module.exports = router;
