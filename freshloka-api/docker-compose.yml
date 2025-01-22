@@ -1,0 +1,58 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: freshloka-app
+    ports:
+      - 3001:3001
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - mongo
+    networks:
+    - freshloka_network
+
+  mongo-express:
+    image: mongo-express
+    container_name: freshloka-me
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_BASICAUTH_USERNAME: mongodb
+      ME_CONFIG_BASICAUTH_PASSWORD: secret
+      ME_CONFIG_MONGODB_ADMINUSERNAME: mongodb
+      ME_CONFIG_MONGODB_ADMINPASSWORD: secret
+      ME_CONFIG_MONGODB_URL: mongodb://mongodb:secret@mongo:27017/freshloka
+    depends_on:
+      - mongo
+    networks:
+    - freshloka_network
+
+  mongo:
+    image: mongo
+    container_name: freshloka-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongodb
+      MONGO_INITDB_ROOT_PASSWORD: secret
+      MONGO_INITDB_ROOT_DATABASE: freshloka
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "27017"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+    networks:
+    - freshloka_network
+
+
+volumes:
+  mongo_data:
+
+networks:
+  freshloka_network:
+    driver: bridge
