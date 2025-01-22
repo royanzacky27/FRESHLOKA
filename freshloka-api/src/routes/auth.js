@@ -65,7 +65,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post(
+router.get(
   "/logout",
   authenticateToken,
   checkTokenBlacklist,

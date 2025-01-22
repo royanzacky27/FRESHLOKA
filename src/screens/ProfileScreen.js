@@ -1,28 +1,91 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Switch } from "react-native";
+import { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Switch,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "../contexts/AuthContext";
 
 const ProfileScreen = ({ navigation }) => {
-  const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
-  const [backgroundPlayEnabled, setBackgroundPlayEnabled] =
-    React.useState(true);
-  const [downloadViaWiFiOnly, setDownloadViaWiFiOnly] = React.useState(false);
-  const [autoplayEnabled, setAutoplayEnabled] = React.useState(true);
+  const { token, isAuthenticated, logout, authMe } = useAuth();
+  const [userData, setUserData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigation.replace("Auth");
+      return;
+    }
+
+    fetchUserData();
+  }, [isAuthenticated, token, navigation]);
+
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [backgroundPlayEnabled, setBackgroundPlayEnabled] = useState(true);
+  const [downloadViaWiFiOnly, setDownloadViaWiFiOnly] = useState(false);
+  const [autoplayEnabled, setAutoplayEnabled] = useState(true);
+
+  const fetchUserData = async () => {
+    try {
+      const result = await authMe(token);
+      setUserData(result.data);
+      setIsLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleLogout = async () => {
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to log out?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Logout",
+          onPress: async () => {
+            await logout(token);
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#2E7D32" />
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerText}>Profile</Text>
-        <TouchableOpacity onPress={() => alert("Logout")}>
+        <TouchableOpacity onPress={handleLogout}>
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
       </View>
+
       <View style={styles.profileInfo}>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>R</Text>
         </View>
-        <Text style={styles.name}>royan</Text>
-        <Text style={styles.email}>loka@gamil.com</Text>
+        {userData && (
+          <>
+            <Text style={styles.name}>{userData.name}</Text>
+            <Text style={styles.email}>{userData.email}</Text>
+          </>
+        )}
+
         <TouchableOpacity style={styles.editButton}>
           <Text style={styles.editButtonText}>Edit Profile</Text>
         </TouchableOpacity>
@@ -180,6 +243,17 @@ const styles = StyleSheet.create({
   navButtonText: {
     color: "white",
     fontSize: 12,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#555",
   },
 });
 

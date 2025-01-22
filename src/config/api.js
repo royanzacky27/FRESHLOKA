@@ -4,7 +4,7 @@ import { API_URL, LOGIN_URL, REGISTER_URL } from "../config/constants";
 
 // Membuat instance Axios
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: API_URL, // Ensure API_URL is correctly set
   headers: {
     "Content-Type": "application/json",
   },
@@ -37,7 +37,7 @@ api.interceptors.response.use(
       console.log("Token expired or unauthorized. Redirecting to login...");
       await AsyncStorage.removeItem("authToken"); // Hapus token
       // Navigasi ke login screen jika menggunakan react-navigation
-      navigation.replace("Login");
+      navigation.replace("Auth");
     }
 
     return Promise.reject(error);

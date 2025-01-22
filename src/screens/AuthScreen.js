@@ -7,41 +7,24 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import { LOGIN_URL } from "../config/constants";
-import { api } from "../config/api";
+
+import { useAuth } from "../contexts/AuthContext";
 
 const AuthScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { login } = useAuth();
 
   const handleLogin = async () => {
     try {
-      const response = await api.post(LOGIN_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.token) {
-        // Jika login berhasil, simpan token di AsyncStorage
-        await AsyncStorage.setItem("authToken", data.token);
+      const result = await login(email, password);
+      if (result) {
+        Alert.alert("Login", result.message || "Invalid email or password!");
         navigation.replace("Home");
-      } else {
-        Alert.alert(
-          "Login Failed",
-          data.message || "Invalid email or password!"
-        );
       }
     } catch (error) {
       console.error("Error during login:", error);
-      Alert.alert("Login Error", "There was an error while trying to login.");
+      Alert.alert("Login Failed", "There was an error while trying to login.");
     }
   };
 

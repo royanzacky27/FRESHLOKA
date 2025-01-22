@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "../contexts/AuthContext";
 
 const categories = [
   { id: "1", name: "Sayuran", image: require("../assets/sayuran.png") },
@@ -44,6 +45,13 @@ const products = [
 ];
 
 const HomeScreen = ({ navigation }) => {
+  const { isAuthenticated, logout } = useAuth();
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigation.replace("Auth");
+    }
+  }, [isAuthenticated, navigation]);
+
   const [cartItems, setCartItems] = useState([]);
 
   const addToCart = (item) => {

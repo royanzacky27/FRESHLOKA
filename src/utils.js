@@ -14,14 +14,3 @@ const getToken = async () => {
     console.error("Error getting token:", error);
   }
 };
-
-const handleLogout = async () => {
-  try {
-    await AsyncStorage.removeItem("authToken");
-    console.log("Token removed.");
-    // Arahkan pengguna ke halaman login setelah logout
-    navigation.replace("Login");
-  } catch (error) {
-    console.error("Error removing token:", error);
-  }
-};
