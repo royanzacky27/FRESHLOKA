@@ -59,4 +59,39 @@ router.post(
   }
 );
 
+router.patch(
+  "/:id",
+  authenticateToken,
+  checkAdmin,
+  checkTokenBlacklist,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+
+      const category = await Category.findById(id);
+
+      if (!category) {
+        return res.status(404).json({
+          message: "Category not found",
+        });
+      }
+
+      Object.assign(category, updateData);
+      await category.save();
+
+      return res.json({
+        message: "Category updated successfully",
+        data: category,
+      });
+    } catch (error) {
+      console.error("Error updating category:", error);
+      return res.status(500).json({
+        message: "Internal Server Error",
+        error: error.message,
+      });
+    }
+  }
+);
+
 module.exports = router;

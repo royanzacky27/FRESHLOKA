@@ -11,15 +11,15 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
-import { CART_URL, CATEGORY_URL, PRODUCTS_URL } from "../config/constants";
+import { CART_URL, PRODUCTS_URL } from "../config/constants";
 import { useAssets } from "../contexts/AssetsContext";
 
-const HomeScreen = ({ navigation }) => {
-  const { isAuthenticated, token } = useAuth();
+const CategoryScreen = ({ route, navigation }) => {
+  const { category } = route.params;
   const { assets } = useAssets();
 
-  const [categoriesData, setCategoriesData] = useState(null);
-  const [productData, setProductData] = useState(null);
+  const { isAuthenticated, token } = useAuth();
+  const [productDataByCategory, setProductDataByCategory] = useState(null);
   const [cartData, setCartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -27,27 +27,10 @@ const HomeScreen = ({ navigation }) => {
     if (!isAuthenticated) {
       navigation.replace("Auth");
     }
-    fetchCategoryData();
-    fetchProductData();
+    fetchProductDataByCategory();
     fetchCartData();
   }, [isAuthenticated, navigation]);
 
-  const fetchCategoryData = async () => {
-    try {
-      const response = await axios.get(CATEGORY_URL, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const result = response.data;
-      if (response.status === 200) {
-        setCategoriesData(result.data);
-      }
-      setIsLoading(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
   const fetchCartData = async () => {
     try {
       const response = await axios.get(CART_URL, {
@@ -65,39 +48,25 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  const fetchProductData = async () => {
+  const fetchProductDataByCategory = async () => {
     try {
-      const response = await axios.get(PRODUCTS_URL, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        `${PRODUCTS_URL}?category=${category._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       const result = response.data;
       if (response.status === 200) {
-        setProductData(result.data);
+        setProductDataByCategory(result.data);
       }
       setIsLoading(false);
     } catch (error) {
       console.error(error);
     }
   };
-
-  // const addToCart = (item) => {
-  //   setCartItems((prevItems) => {
-  //     const existingItem = prevItems.find(
-  //       (cartItem) => cartItem.id === item.id
-  //     );
-  //     if (existingItem) {
-  //       return prevItems.map((cartItem) =>
-  //         cartItem.id === item.id
-  //           ? { ...cartItem, quantity: cartItem.quantity + 1 }
-  //           : cartItem
-  //       );
-  //     } else {
-  //       return [...prevItems, { ...item, quantity: 1 }];
-  //     }
-  //   });
-  // };
 
   if (isLoading) {
     return (
@@ -130,36 +99,15 @@ const HomeScreen = ({ navigation }) => {
         </View>
       </View>
 
-      <Image source={require("../assets/banner.png")} style={styles.banner} />
+      <Image source={assets[category["imageUrl"]]} style={styles.banner} />
 
-      <Text style={styles.subTitle}>Category</Text>
-
-      <FlatList
-        data={categoriesData}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.categoryCard}
-            onPress={() =>
-              navigation.navigate("CategoryScreen", { category: item })
-            }
-          >
-            <Image
-              source={assets[item.imageUrl]}
-              style={styles.categoryImage}
-            />
-            <Text style={styles.categoryName}>{item.name}</Text>
-          </TouchableOpacity>
-        )}
-        keyExtractor={(item) => item._id}
-        horizontal
-        contentContainerStyle={styles.categoryList}
-        showsHorizontalScrollIndicator={false}
-      />
-
-      <Text style={styles.subTitle}>Products</Text>
+      <Text style={styles.subTitle}>
+        <Text style={styles.categoryLabel}>Category: </Text>
+        <Text style={styles.categoryValue}>{category["name"]}</Text>
+      </Text>
 
       <FlatList
-        data={productData}
+        data={productDataByCategory}
         renderItem={({ item }) => (
           <View style={styles.productCard}>
             <TouchableOpacity
@@ -182,7 +130,19 @@ const HomeScreen = ({ navigation }) => {
         keyExtractor={(item) => item._id}
         numColumns={2}
         contentContainerStyle={styles.productList}
+        ListEmptyComponent={() => (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>Belum ada data</Text>
+          </View>
+        )}
       />
+
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={styles.backButton}
+      >
+        <Text style={styles.backButtonText}>Back</Text>
+      </TouchableOpacity>
 
       <View style={styles.navigationContainer}>
         <TouchableOpacity
@@ -257,7 +217,7 @@ const styles = StyleSheet.create({
   },
   banner: {
     width: "100%",
-    height: 250,
+    height: 100,
     borderRadius: 10,
     overflow: "hidden",
     resizeMode: "cover",
@@ -267,6 +227,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
+  },
+  categoryLabel: {
+    fontWeight: "bold",
+    color: "grey",
+  },
+  categoryValue: {
+    fontWeight: "normal",
+    color: "#2E7D32",
   },
   categoryList: {
     width: "100%",
@@ -351,6 +319,32 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#555",
   },
+  backButton: {
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#dfdfdf",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    alignSelf: "center",
+  },
+  backButtonText: {
+    color: "#2E7D32",
+    fontSize: 12,
+  },
+  emptyContainer: {
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "#777",
+  },
 });
 
-export default HomeScreen;
+export default CategoryScreen;
