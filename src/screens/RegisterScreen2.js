@@ -28,6 +28,19 @@ const RegisterScreen2 = ({ route, navigation }) => {
     return null;
   };
 
+  const handleLogin = async (email, password) => {
+    try {
+      const result = await login(email, password);
+      if (result) {
+        Alert.alert("Login", result.message || "Invalid email or password!");
+        navigation.replace("Home");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+      Alert.alert("Login Failed", "There was an error while trying to login.");
+    }
+  };
+
   const handleCreate = async () => {
     const result = await register({
       name,
@@ -39,12 +52,9 @@ const RegisterScreen2 = ({ route, navigation }) => {
       gender,
     });
     if (result) {
+      const { emailSign } = result;
       Alert.alert("Register", "Successfully!");
-      const loggin = await login(email, password);
-      if (loggin) {
-        Alert.alert("Login", result.message || "Invalid email or password!");
-        navigation.replace("Home");
-      }
+      await handleLogin(emailSign, password);
     } else {
       Alert.alert("Register", "Failed!");
     }

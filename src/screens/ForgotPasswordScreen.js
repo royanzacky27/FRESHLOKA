@@ -9,33 +9,24 @@ import {
 } from "react-native";
 
 const ForgotPasswordScreen = ({ navigation }) => {
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
-  const passwordsMatch = () => {
-    return password === confirmPassword;
-  };
-
-  const handleContinue = () => {
-    if (passwordsMatch()) {
-      navigation.navigate("RegisterScreen2", {
-        name,
-        email,
-        password,
-        confirmPassword,
-      });
-    } else {
-      Alert.alert("Error", "Passwords do not match!");
-    }
+  const handleValidate = () => {
+    // if (passwordsMatch()) {
+    //   navigation.navigate("ChangePassword", {
+    //     userID,
+    //   });
+    // } else {
+    Alert.alert("Validate", "User do not match!");
+    // }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Freshloka</Text>
       <Text style={styles.welcomeText}>
-        Join Us Today! Register Your Account Below.
+        Verify your details before submitting.
       </Text>
 
       <TextInput
@@ -47,29 +38,13 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
       <TextInput
         style={styles.input}
-        placeholder="Name"
-        value={name}
-        onChangeText={setName}
+        placeholder="Phone Number"
+        value={phoneNumber}
+        onChangeText={setPhoneNumber}
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm Password"
-        secureTextEntry
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-      />
-
-      <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
-        <Text style={styles.buttonText}>Continue</Text>
+      <TouchableOpacity style={styles.continueButton} onPress={handleValidate}>
+        <Text style={styles.buttonText}>Validate</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
