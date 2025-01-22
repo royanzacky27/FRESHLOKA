@@ -5,28 +5,36 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from "react-native";
-import { FORGOT_PASSWORD_VALIDATE_URL } from "../config/constants";
+import { FORGOT_PASSWORD_CHANGE_URL } from "../config/constants";
 import axios from "axios";
 
-const ForgotPasswordScreen = ({ navigation }) => {
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+const ForgotPasswordScreen2 = ({ route, navigation }) => {
+  const { userId } = route.params;
 
-  const handleValidate = async () => {
-    const result = await validateForgotPassword(email, phoneNumber);
-    print(result);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+
+  const handleChangePassword = async () => {
+    const result = await changePassword(
+      userId,
+      newPassword,
+      confirmNewPassword
+    );
     if (result) {
-      navigation.navigate("ForgotPasswordScreen2", {
-        userId: result.data.id,
-      });
+      Alert.alert("Change Password", "Successfully!");
+      navigation.replace("Auth");
+    } else {
+      Alert.alert("Change Password", "Failed!");
     }
   };
 
-  const validateForgotPassword = async (email, phoneNumber) => {
-    const response = await axios.post(FORGOT_PASSWORD_VALIDATE_URL, {
-      email,
-      phoneNumber,
+  const changePassword = async (userId, newPassword, confirmNewPassword) => {
+    const response = await axios.post(FORGOT_PASSWORD_CHANGE_URL, {
+      id: userId,
+      newPassword,
+      confirmNewPassword,
     });
     const result = response.data;
     if (response.status === 200) {
@@ -38,26 +46,31 @@ const ForgotPasswordScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Freshloka</Text>
-      <Text style={styles.welcomeText}>
-        Verify your details before submitting.
-      </Text>
+      <Text style={styles.welcomeText}>Change your credential.</Text>
+
+      <TextInput style={styles.input} placeholder="User ID" value={userId} />
 
       <TextInput
         style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
+        placeholder="New Password"
+        secureTextEntry
+        value={newPassword}
+        onChangeText={setNewPassword}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Phone Number"
-        value={phoneNumber}
-        onChangeText={setPhoneNumber}
+        placeholder="Confirm New Password"
+        secureTextEntry
+        value={confirmNewPassword}
+        onChangeText={setConfirmNewPassword}
       />
 
-      <TouchableOpacity style={styles.continueButton} onPress={handleValidate}>
-        <Text style={styles.buttonText}>Validate</Text>
+      <TouchableOpacity
+        style={styles.continueButton}
+        onPress={handleChangePassword}
+      >
+        <Text style={styles.buttonText}>Change</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -121,4 +134,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ForgotPasswordScreen;
+export default ForgotPasswordScreen2;

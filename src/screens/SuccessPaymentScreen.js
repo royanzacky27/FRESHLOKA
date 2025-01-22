@@ -5,34 +5,21 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from "react-native";
-import { FORGOT_PASSWORD_VALIDATE_URL } from "../config/constants";
-import axios from "axios";
 
-const ForgotPasswordScreen = ({ navigation }) => {
+const SuccessPaymentScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
 
-  const handleValidate = async () => {
-    const result = await validateForgotPassword(email, phoneNumber);
-    print(result);
-    if (result) {
-      navigation.navigate("ForgotPasswordScreen2", {
-        userId: result.data.id,
-      });
-    }
-  };
-
-  const validateForgotPassword = async (email, phoneNumber) => {
-    const response = await axios.post(FORGOT_PASSWORD_VALIDATE_URL, {
-      email,
-      phoneNumber,
-    });
-    const result = response.data;
-    if (response.status === 200) {
-      return result;
-    }
-    return null;
+  const handleValidate = () => {
+    // if (passwordsMatch()) {
+    //   navigation.navigate("ChangePassword", {
+    //     userID,
+    //   });
+    // } else {
+    Alert.alert("Validate", "User do not match!");
+    // }
   };
 
   return (
@@ -121,4 +108,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ForgotPasswordScreen;
+export default SuccessPaymentScreen;
