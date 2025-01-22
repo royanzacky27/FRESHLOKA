@@ -103,6 +103,11 @@ router.patch(
       Object.assign(order, updateData);
       await order.save();
 
+      const cartId = order.cart._id.toString();
+      const cart = await Cart.findById(cartId);
+      cart.status = "COMPLETED";
+      await cart.save();
+
       return res.json({
         message: "Successfully payment the order!",
         data: order,
