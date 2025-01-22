@@ -8,7 +8,7 @@ import {
   Alert,
 } from "react-native";
 
-const RegisterScreen1 = ({ navigation }) => {
+const ForgotPasswordScreen = ({ navigation }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -133,4 +133,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RegisterScreen1;
+export default ForgotPasswordScreen;

@@ -29,12 +29,10 @@ const AuthScreen = ({ navigation }) => {
   };
 
   const handleForgotPassword = () => {
-    // Navigasi ke halaman Forgot Password
-    navigation.navigate("ForgotPassword"); // Pastikan Anda memiliki halaman ini
+    navigation.navigate("ForgotPasswordScreen");
   };
 
   const handleSignUp = () => {
-    // Navigasi ke halaman Sign Up
     navigation.navigate("RegisterScreen1");
   };
 
