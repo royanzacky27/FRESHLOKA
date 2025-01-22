@@ -1,11 +1,15 @@
 require("dotenv").config();
 const express = require("express");
 const Product = require("../models/product");
-const { authenticateToken, checkAdmin } = require("../config/middlewares");
+const {
+  authenticateToken,
+  checkAdmin,
+  checkTokenBlacklist,
+} = require("../config/middlewares");
 
 const router = express.Router();
 
-router.get("/", authenticateToken, async (req, res) => {
+router.get("/", authenticateToken, checkTokenBlacklist, async (req, res) => {
   try {
     const category = req.query.category;
 
@@ -27,33 +31,70 @@ router.get("/", authenticateToken, async (req, res) => {
   }
 });
 
-router.post("/", authenticateToken, async (req, res) => {
-  try {
-    const { name, description, price, category, imageUrl } = req.body;
+router.post(
+  "/",
+  authenticateToken,
+  checkAdmin,
+  checkTokenBlacklist,
+  async (req, res) => {
+    try {
+      const { ...data } = req.body;
 
-    const createdBy = req.user._id;
+      const createdBy = req.user._id;
 
-    const newProduct = new Product({
-      name,
-      description,
-      price,
-      category,
-      imageUrl,
-      createdBy,
-    });
+      const newProduct = new Product({
+        ...data,
+        createdBy,
+      });
 
-    await newProduct.save();
-    return res.status(201).json({
-      message: "Product created successfully",
-      data: newProduct,
-    });
-  } catch (error) {
-    console.error("Error creating product:", error);
-    return res.status(500).json({
-      message: "Internal Server Error",
-      error: error.message,
-    });
+      await newProduct.save();
+      return res.status(201).json({
+        message: "Product created successfully",
+        data: newProduct,
+      });
+    } catch (error) {
+      console.error("Error creating product:", error);
+      return res.status(500).json({
+        message: "Internal Server Error",
+        error: error.message,
+      });
+    }
   }
-});
+);
+
+router.patch(
+  "/:id",
+  authenticateToken,
+  checkAdmin,
+  checkTokenBlacklist,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+
+      const product = await Product.findById(id);
+
+      if (!product) {
+        return res.status(404).json({
+          message: "Product not found",
+        });
+      }
+
+      Object.assign(product, updateData);
+      await product.save();
+
+      return res.json({
+        message: "Product updated successfully",
+        data: product,
+      });
+    } catch (error) {
+      console.error("Error updating product:", error);
+      return res.status(500).json({
+        message: "Internal Server Error",
+        error: error.message,
+      });
+    }
+  }
+);
 
 module.exports = router;

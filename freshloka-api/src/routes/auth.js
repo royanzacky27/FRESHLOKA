@@ -3,7 +3,11 @@ require("dotenv").config();
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-const { authenticateToken, checkAdmin } = require("../config/middlewares");
+const TokenBlacklist = require("../models/token");
+const {
+  authenticateToken,
+  checkTokenBlacklist,
+} = require("../config/middlewares");
 
 const router = express.Router();
 
@@ -35,7 +39,6 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Login
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -62,7 +65,38 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("/me", authenticateToken, (req, res) => {
+router.post(
+  "/logout",
+  authenticateToken,
+  checkTokenBlacklist,
+  async (req, res) => {
+    try {
+      const token = req.headers.authorization?.split(" ")[1];
+
+      if (!token) {
+        return res.status(400).json({ message: "No token provided" });
+      }
+
+      // Decode token untuk mendapatkan waktu kedaluwarsa
+      const decoded = jwt.decode(token);
+      if (!decoded) {
+        return res.status(400).json({ message: "Invalid token" });
+      }
+
+      // Simpan token ke blacklist
+      const blacklistEntry = new TokenBlacklist({ token });
+      await blacklistEntry.save();
+
+      return res.status(200).json({ message: "Logout successful" });
+    } catch (err) {
+      return res
+        .status(500)
+        .json({ message: "Server error", error: err.message });
+    }
+  }
+);
+
+router.get("/me", authenticateToken, checkTokenBlacklist, (req, res) => {
   try {
     return res.json({
       message: "Successfully retrieved user data!",

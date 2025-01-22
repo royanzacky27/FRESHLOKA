@@ -4,6 +4,7 @@ const categorySchema = new mongoose.Schema(
   {
     name: { type: String, required: true, unique: true },
     description: { type: String },
+    imageUrl: { type: String, default: null },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

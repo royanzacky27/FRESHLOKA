@@ -1,20 +1,20 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { API_URL } from "../config/constants";
+import { API_URL, LOGIN_URL, REGISTER_URL } from "../config/constants";
 
 // Membuat instance Axios
 const api = axios.create({
   baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 // Interceptor untuk menambahkan Authorization header jika ada token
 api.interceptors.request.use(
   async (config) => {
     // Cek jika URL request bukan login atau register
-    if (
-      !config.url.includes("auth/login") &&
-      !config.url.includes("auth/register")
-    ) {
+    if (!config.url.includes(LOGIN_URL) && !config.url.includes(REGISTER_URL)) {
       const token = await AsyncStorage.getItem("authToken");
 
       if (token) {
