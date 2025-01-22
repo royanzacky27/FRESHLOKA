@@ -12,7 +12,7 @@ services:
     depends_on:
       - mongo
     networks:
-    - freshloka_network
+      - freshloka_network
 
   mongo-express:
     image: mongo-express
@@ -29,7 +29,7 @@ services:
     depends_on:
       - mongo
     networks:
-    - freshloka_network
+      - freshloka_network
 
   mongo:
     image: mongo
@@ -47,8 +47,7 @@ services:
       start_period: 30s
       timeout: 10s
     networks:
-    - freshloka_network
-
+      - freshloka_network
 
 volumes:
   mongo_data:
