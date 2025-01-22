@@ -48,6 +48,7 @@ const HomeScreen = ({ navigation }) => {
       console.error(error);
     }
   };
+
   const fetchCartData = async () => {
     try {
       const response = await axios.get(CART_URL, {
@@ -82,23 +83,6 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  // const addToCart = (item) => {
-  //   setCartItems((prevItems) => {
-  //     const existingItem = prevItems.find(
-  //       (cartItem) => cartItem.id === item.id
-  //     );
-  //     if (existingItem) {
-  //       return prevItems.map((cartItem) =>
-  //         cartItem.id === item.id
-  //           ? { ...cartItem, quantity: cartItem.quantity + 1 }
-  //           : cartItem
-  //       );
-  //     } else {
-  //       return [...prevItems, { ...item, quantity: 1 }];
-  //     }
-  //   });
-  // };
-
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -118,7 +102,7 @@ const HomeScreen = ({ navigation }) => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => navigation.navigate("Cart", cartData)}
+            onPress={() => navigation.navigate("CartScreen", cartData)}
           >
             <Ionicons name="cart" size={24} color="grey" />
             {cartData.length > 0 && (
@@ -201,7 +185,7 @@ const HomeScreen = ({ navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navButton}
-          onPress={() => navigation.navigate("Cart")}
+          onPress={() => navigation.navigate("CartScreen")}
         >
           <Ionicons name="cart" size={24} color="white" />
           <Text style={styles.navButtonText}>Cart</Text>

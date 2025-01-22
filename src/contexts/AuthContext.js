@@ -3,10 +3,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AUTH_ME_URL, LOGIN_URL, LOGOUT_URL } from "../config/constants";
 import axios from "axios";
 
-// Membuat Context untuk Auth
 const AuthContext = createContext();
 
-// Membuat Provider untuk AuthContext
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,22 +9,73 @@ import {
 } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useAssets } from "../contexts/AssetsContext";
+import { useAuth } from "../contexts/AuthContext";
+import { CART_URL } from "../config/constants";
+import { useCart } from "../contexts/CartContext";
+import axios from "axios";
 
 const ProductDetailScreen = ({ route, navigation, addToCart }) => {
   const { product } = route.params;
+  const { isAuthenticated, token } = useAuth();
   const { assets } = useAssets();
+  const {
+    cartItems,
+    cartCheckoutItems,
+    setCartCheckoutItems,
+    addItemToCart,
+    removeItemFromCart,
+    clearCart,
+  } = useCart();
 
   const [quantity, setQuantity] = useState(1);
 
-  const handleAddToCart = () => {
-    if (typeof addToCart === "function") {
-      addToCart({ ...product, quantity }); // Menambahkan produk ke cart
-      Alert.alert("Success", "Product added to cart!");
-      navigation.goBack(); // Kembali ke halaman sebelumnya
-    } else {
-      console.error("addToCart is not a function or is undefined!");
-      Alert.alert("Error", "Failed to add product to cart!");
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigation.replace("Auth");
     }
+  }, [isAuthenticated, navigation]);
+
+  const createCart = async () => {
+    try {
+      if (cartItems.length > 0) {
+        const response = await axios.post(
+          CART_URL,
+          {
+            items: cartItems,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const result = response.data;
+        if (response.status === 201) {
+          console.log(result.data);
+          Alert.alert(
+            "Cart Updated",
+            "The item has been successfully added to your cart.",
+            [
+              { text: "Cancel", style: "cancel" },
+              {
+                text: "Checkout",
+                onPress: () => {
+                  navigation.navigate("CartScreen");
+                },
+              },
+            ],
+            { cancelable: true }
+          );
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleAddToCart = async () => {
+    await addItemToCart({ id: product._id, quantity });
+    await createCart();
   };
 
   return (
@@ -181,6 +232,17 @@ const styles = StyleSheet.create({
   backButtonText: {
     color: "#2E7D32",
     fontSize: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#555",
   },
 });
 

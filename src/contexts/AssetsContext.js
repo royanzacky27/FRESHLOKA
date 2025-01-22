@@ -1,7 +1,5 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createContext, useContext, useState } from "react";
 
-// Membuat Context untuk Auth
 const AssetsContext = createContext();
 
 export const AssetsProvider = ({ children }) => {
@@ -14,6 +12,7 @@ export const AssetsProvider = ({ children }) => {
     bawangPutih: require("../assets/bawangPutih.png"),
     paketSayurHijau: require("../assets/paketSayurHijau.png"),
     kol: require("../assets/kol.png"),
+    telur: require("../assets/telur.png"),
   });
 
   return (

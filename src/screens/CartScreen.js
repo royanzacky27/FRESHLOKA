@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,9 +6,46 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  ActivityIndicator,
 } from "react-native";
+import { useAuth } from "../contexts/AuthContext";
+import { useAssets } from "../contexts/AssetsContext";
+import { CART_URL } from "../config/constants";
+import axios from "axios";
 
-const CartScreen = () => {
+const CartScreen = ({ navigation }) => {
+  const { isAuthenticated, token } = useAuth();
+  const { assets } = useAssets();
+  const [cartData, setCartData] = useState([]);
+  const [cartDataItems, setcartDataItems] = useState([]);
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigation.replace("Auth");
+    }
+    fetchCartData();
+    console.log(cartData);
+  }, [isAuthenticated, navigation]);
+
+  const fetchCartData = async () => {
+    try {
+      const response = await axios.get(CART_URL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const result = response.data;
+      if (response.status === 200) {
+        setCartData(result.data);
+      }
+      setIsLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const [cartItems, setCartItems] = useState([
     {
       id: "1",
@@ -16,20 +53,6 @@ const CartScreen = () => {
       price: 96000,
       quantity: 2,
       image: require("../assets/pisang.png"),
-    },
-    {
-      id: "2",
-      name: "Telur",
-      price: 17500,
-      quantity: 2,
-      image: require("../assets/telur.png"),
-    },
-    {
-      id: "3",
-      name: "Sayur Kol",
-      price: 18000,
-      quantity: 2,
-      image: require("../assets/kol.png"),
     },
   ]);
 
@@ -60,14 +83,26 @@ const CartScreen = () => {
     );
   };
 
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#2E7D32" />
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Keranjang Belanja</Text>
-      {cartItems.length === 0 ? (
+      <View style={styles.header}>
+        <Text style={styles.title}>Carts</Text>
+      </View>
+
+      {cartData.length === 0 ? (
         <Text style={styles.emptyCartText}>Keranjang Anda Kosong</Text>
       ) : (
         <>
-          <Text style={styles.subtitle}>Pilih Waktu Pengiriman</Text>
+          {/* <Text style={styles.subtitle}>Pilih Waktu Pengiriman</Text> */}
           <FlatList
             data={cartItems}
             renderItem={({ item }) => (
@@ -117,10 +152,17 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#fff",
   },
+  header: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 70,
+  },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
+    textAlign: "center",
   },
   subtitle: {
     fontSize: 16,

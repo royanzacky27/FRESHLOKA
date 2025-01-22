@@ -17,8 +17,8 @@ import { useAssets } from "../contexts/AssetsContext";
 const CategoryScreen = ({ route, navigation }) => {
   const { category } = route.params;
   const { assets } = useAssets();
-
   const { isAuthenticated, token } = useAuth();
+
   const [productDataByCategory, setProductDataByCategory] = useState(null);
   const [cartData, setCartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
