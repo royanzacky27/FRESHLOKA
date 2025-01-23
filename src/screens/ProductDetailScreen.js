@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useAssets } from "../contexts/AssetsContext";
@@ -14,10 +15,12 @@ import { CART_URL } from "../config/constants";
 import { useCart } from "../contexts/CartContext";
 import axios from "axios";
 
-const ProductDetailScreen = ({ route, navigation, addToCart }) => {
+const ProductDetailScreen = ({ route, navigation }) => {
   const { product } = route.params;
   const { isAuthenticated, token } = useAuth();
   const { assets } = useAssets();
+  const [isLoading, setIsLoading] = useState(false);
+
   const {
     cartItems,
     cartCheckoutItems,
@@ -77,6 +80,15 @@ const ProductDetailScreen = ({ route, navigation, addToCart }) => {
     await addItemToCart({ id: product._id, quantity });
     await createCart();
   };
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#2E7D32" />
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
