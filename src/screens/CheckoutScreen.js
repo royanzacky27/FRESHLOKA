@@ -27,6 +27,7 @@ const CheckoutScreeen = ({ route, navigation }) => {
   useEffect(() => {
     if (!isAuthenticated) {
       navigation.replace("Auth");
+      return;
     }
     fetchCartData();
     fetchUserData();

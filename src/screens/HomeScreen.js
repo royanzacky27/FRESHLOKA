@@ -26,6 +26,7 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     if (!isAuthenticated) {
       navigation.replace("Auth");
+      return;
     }
     fetchCategoryData();
     fetchProductData();

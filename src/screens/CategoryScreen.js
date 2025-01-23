@@ -26,6 +26,7 @@ const CategoryScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (!isAuthenticated) {
       navigation.replace("Auth");
+      return;
     }
     fetchProductDataByCategory();
     fetchCartData();
