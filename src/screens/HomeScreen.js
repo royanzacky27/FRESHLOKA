@@ -11,16 +11,18 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
-import { CART_URL, CATEGORY_URL, PRODUCTS_URL } from "../config/constants";
+import { CATEGORY_URL, PRODUCTS_URL } from "../config/constants";
 import { useAssets } from "../contexts/AssetsContext";
+import { useCart } from "../contexts/CartContext";
 
 const HomeScreen = ({ navigation }) => {
   const { isAuthenticated, token } = useAuth();
   const { assets } = useAssets();
+  const { fetchCartData, productsInCart } = useCart();
 
   const [categoriesData, setCategoriesData] = useState(null);
   const [productData, setProductData] = useState(null);
-  const [cartData, setCartData] = useState([]);
+
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -28,9 +30,10 @@ const HomeScreen = ({ navigation }) => {
       navigation.replace("Auth");
       return;
     }
+
+    fetchCartData(token);
     fetchCategoryData();
     fetchProductData();
-    fetchCartData();
   }, [isAuthenticated, navigation]);
 
   const fetchCategoryData = async () => {
@@ -43,23 +46,6 @@ const HomeScreen = ({ navigation }) => {
       const result = response.data;
       if (response.status === 200) {
         setCategoriesData(result.data);
-      }
-      setIsLoading(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const fetchCartData = async () => {
-    try {
-      const response = await axios.get(CART_URL, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const result = response.data;
-      if (response.status === 200) {
-        setCartData(result.data);
       }
       setIsLoading(false);
     } catch (error) {
@@ -103,12 +89,14 @@ const HomeScreen = ({ navigation }) => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => navigation.navigate("CartScreen", cartData)}
+            onPress={() => navigation.navigate("CartScreen", productsInCart)}
           >
             <Ionicons name="cart" size={24} color="grey" />
-            {cartData.length > 0 && (
+            {productsInCart.length > 0 && (
               <View style={styles.cartBadge}>
-                <Text style={styles.cartBadgeText}>{cartData.length}</Text>
+                <Text style={styles.cartBadgeText}>
+                  {productsInCart.length}
+                </Text>
               </View>
             )}
           </TouchableOpacity>

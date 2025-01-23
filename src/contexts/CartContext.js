@@ -7,6 +7,7 @@ const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [productsInCart, setProductInCart] = useState([]);
+  const [totalAmount, setTotalAmount] = useState(0);
 
   // Add item to the cart
   const addItemToCart = (item) => {
@@ -33,6 +34,13 @@ export const CartProvider = ({ children }) => {
     setCartItems([]);
   };
 
+  const countTotalAmount = () => {
+    const total = productsInCart.reduce((acc, element) => {
+      return acc + element.quantity * element.price; // Akumulasi total
+    }, 0); // Mulai akumulasi dari 0
+    setTotalAmount(total);
+  };
+
   const fetchCartData = async (token) => {
     try {
       const response = await axios.get(CART_URL, {
@@ -52,6 +60,7 @@ export const CartProvider = ({ children }) => {
           }));
         });
         setProductInCart(products);
+        console.log(productsInCart);
       } else {
         setError("Failed to update cart: No items found in response");
       }
@@ -114,6 +123,8 @@ export const CartProvider = ({ children }) => {
       value={{
         cartItems,
         productsInCart,
+        totalAmount,
+        countTotalAmount,
         fetchCartData,
         createItemToCart,
         addItemToCart,

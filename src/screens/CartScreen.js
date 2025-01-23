@@ -16,9 +16,8 @@ import { useCart } from "../contexts/CartContext";
 const CartScreen = ({ navigation }) => {
   const { isAuthenticated, token } = useAuth();
   const { assets } = useAssets();
-  const { productsInCart, fetchCartData } = useCart();
+  const { productsInCart, fetchCartData, totalAmount } = useCart();
   const [isLoading, setIsLoading] = useState(true);
-  const [totalAmount, setTotalAmount] = useState(0);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -28,9 +27,6 @@ const CartScreen = ({ navigation }) => {
     fetchCartData(token);
     if (productsInCart) {
       setIsLoading(false);
-      productsInCart.forEach((element) => {
-        setTotalAmount(totalAmount + element.quantity * element.price);
-      });
     }
   }, [isAuthenticated, token, navigation]);
 
