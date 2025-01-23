@@ -32,7 +32,6 @@ const CartScreen = ({ navigation }) => {
     const loadCartData = async () => {
       try {
         await fetchCartData(token);
-        console.log(cartId, "cartId");
       } catch (error) {
         console.error("Error loading cart data:", error);
       } finally {
@@ -151,8 +150,12 @@ const CartScreen = ({ navigation }) => {
         Total: Rp {totalAmount.toLocaleString()}
       </Text>
 
-      <TouchableOpacity style={styles.checkoutButton} onPress={handleCheckout}>
-        <Text style={styles.checkoutButtonText}>Checkout</Text>
+      <TouchableOpacity
+        style={[styles.activeButtton, !cartId && styles.disabledButton]}
+        onPress={handleCheckout}
+        disabled={!cartId}
+      >
+        <Text style={styles.activeButttonText}>Checkout</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -250,14 +253,21 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#2E7D32",
   },
-  checkoutButton: {
+  activeButtton: {
     marginTop: 20,
     backgroundColor: "#2E7D32",
     borderRadius: 5,
     padding: 15,
     alignItems: "center",
   },
-  checkoutButtonText: {
+  disabledButton: {
+    marginTop: 20,
+    backgroundColor: "grey",
+    borderRadius: 5,
+    padding: 15,
+    alignItems: "center",
+  },
+  activeButttonText: {
     color: "#fff",
     fontSize: 18,
   },
