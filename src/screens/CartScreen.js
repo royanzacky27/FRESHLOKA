@@ -155,7 +155,7 @@ const CartScreen = ({ navigation }) => {
       </TouchableOpacity>
 
       <TouchableOpacity
-        onPress={() => navigation.goBack()}
+        onPress={() => navigation.navigate("Home")}
         style={styles.button2}
       >
         <Text style={styles.button2Text}>Back</Text>
