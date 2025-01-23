@@ -58,6 +58,7 @@ const CartScreen = ({ navigation }) => {
         if (result && result.data) {
           const data = result.data;
           setInvoiceData(data);
+          fetchCartData(token);
           navigation.navigate("CheckoutScreen", data);
           Alert.alert("Checkout", "Successfully!");
         } else {
