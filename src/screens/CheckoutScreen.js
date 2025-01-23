@@ -158,6 +158,13 @@ const CheckoutScreeen = ({ navigation }) => {
           </TouchableOpacity>
         </>
       )}
+
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={styles.button2}
+      >
+        <Text style={styles.button2Text}>Back</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -252,6 +259,16 @@ const styles = StyleSheet.create({
   checkoutButtonText: {
     color: "#fff",
     fontSize: 18,
+  },
+  button2: {
+    margin: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  button2Text: {
+    color: "#2E7D32",
+    fontSize: 16,
   },
 });
 
