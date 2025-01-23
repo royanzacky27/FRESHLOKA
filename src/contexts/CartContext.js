@@ -68,6 +68,7 @@ export const CartProvider = ({ children }) => {
           setProductInCart(products);
           countTotalAmount();
         } else {
+          setCartItems([]);
           setError("Failed to update cart: No items found in response");
         }
       })

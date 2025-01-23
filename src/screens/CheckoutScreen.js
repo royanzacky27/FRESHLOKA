@@ -13,7 +13,8 @@ import { CART_URL } from "../config/constants";
 import axios from "axios";
 
 const CheckoutScreeen = ({ route, navigation }) => {
-  const { deliveryTime, deliveryFee, totalPrice, totalAmount } = route.params;
+  const { deliveryFee, deliveryTime, status, totalAmount, totalPrice } =
+    route.params;
   const { isAuthenticated, token, authMe } = useAuth();
   const { assets } = useAssets();
   const [userData, setUserData] = useState(null);
@@ -28,13 +29,11 @@ const CheckoutScreeen = ({ route, navigation }) => {
     }
     fetchCartData();
     fetchUserData();
-    // setTotalAll(total + adminFee);
     console.log(userData, userData);
   }, [isAuthenticated, token, authMe, navigation]);
 
   const fetchUserData = async () => {
-    const response = await authMe(token);
-    const result = response.data;
+    const result = await authMe(token);
     if (result && result.data) {
       setUserData(result.data);
     } else {
@@ -91,6 +90,14 @@ const CheckoutScreeen = ({ route, navigation }) => {
         style={styles.input}
         placeholder="Delivery Time"
         value={`${deliveryTime} minutes`}
+        editable={false}
+      />
+
+      <Text style={styles.label}>Total Price</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Total Price"
+        value={`Rp ${totalPrice.toLocaleString()}`}
         editable={false}
       />
 

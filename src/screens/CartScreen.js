@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { useAuth } from "../contexts/AuthContext";
 import { useAssets } from "../contexts/AssetsContext";
@@ -21,7 +22,7 @@ const CartScreen = ({ navigation }) => {
   const { cartId, cartItems, productsInCart, fetchCartData, totalAmount } =
     useCart();
   const [isLoading, setIsLoading] = useState(true);
-  const [invoiceData, setInvoiceData] = useState(null);
+  const [invoiceData, setInvoiceData] = useState({});
   useEffect(() => {
     if (!isAuthenticated) {
       navigation.replace("Auth");
@@ -53,10 +54,12 @@ const CartScreen = ({ navigation }) => {
       )
       .then((response) => {
         const result = response.data;
+        console.log(result, "checkout 200");
         if (result && result.data) {
           const data = result.data;
           setInvoiceData(data);
-          navigation.navigate("CheckoutScreen", invoiceData);
+          navigation.navigate("CheckoutScreen", data);
+          Alert.alert("Checkout", "Successfully!");
         } else {
           setError("Failed to checkout cartId: No items found in response");
         }
