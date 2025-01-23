@@ -36,8 +36,8 @@ export const CartProvider = ({ children }) => {
     setCartItems([]);
   };
 
-  const countTotalAmount = () => {
-    const total = productsInCart.reduce((acc, element) => {
+  const countTotalAmount = async () => {
+    const total = await productsInCart.reduce((acc, element) => {
       return acc + element.quantity * element.price; // Akumulasi total
     }, 0); // Mulai akumulasi dari 0
     setTotalAmount(total);

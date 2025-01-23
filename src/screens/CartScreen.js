@@ -23,15 +23,22 @@ const CartScreen = ({ navigation }) => {
     useCart();
   const [isLoading, setIsLoading] = useState(true);
   const [invoiceData, setInvoiceData] = useState({});
+
   useEffect(() => {
     if (!isAuthenticated) {
       navigation.replace("Auth");
       return;
     }
-    fetchCartData(token);
-    if (productsInCart) {
-      setIsLoading(false);
-    }
+    const loadCartData = async () => {
+      try {
+        await fetchCartData(token);
+      } catch (error) {
+        console.error("Error loading cart data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadCartData();
   }, [isAuthenticated, token, navigation]);
 
   const handleRemoveItem = (id) => {
