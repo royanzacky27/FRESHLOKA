@@ -166,6 +166,7 @@ const HomeScreen = ({ navigation }) => {
         keyExtractor={(item) => item._id}
         numColumns={2}
         contentContainerStyle={styles.productList}
+        showsVerticalScrollIndicator={false}
       />
 
       <View style={styles.navigationContainer}>
@@ -176,6 +177,7 @@ const HomeScreen = ({ navigation }) => {
           <Ionicons name="home" size={24} color="white" />
           <Text style={styles.navButtonText}>Home</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           style={styles.navButton}
           onPress={() => navigation.navigate("Search")}
@@ -183,6 +185,7 @@ const HomeScreen = ({ navigation }) => {
           <Ionicons name="search" size={24} color="white" />
           <Text style={styles.navButtonText}>Search</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           style={styles.navButton}
           onPress={() => navigation.navigate("CartScreen")}
@@ -190,6 +193,7 @@ const HomeScreen = ({ navigation }) => {
           <Ionicons name="cart" size={24} color="white" />
           <Text style={styles.navButtonText}>Cart</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           style={styles.navButton}
           onPress={() => navigation.navigate("Profile")}
@@ -254,10 +258,9 @@ const styles = StyleSheet.create({
   },
   categoryList: {
     width: "100%",
-    height: 150,
     justifyContent: "space-between",
     alignContent: "center",
-    marginBottom: 10,
+    marginBottom: 40,
   },
   categoryCard: {
     alignItems: "center",

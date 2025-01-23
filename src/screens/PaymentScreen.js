@@ -12,11 +12,29 @@ import { useAuth } from "../contexts/AuthContext";
 import { useAssets } from "../contexts/AssetsContext";
 import { CART_URL } from "../config/constants";
 import axios from "axios";
+import ExpandableItem from "./ExpandableItem";
 
-const CartScreen = ({ navigation }) => {
+const PaymentScreen = ({ navigation }) => {
   const { isAuthenticated, token } = useAuth();
   const { assets } = useAssets();
   const [cartData, setCartData] = useState([]);
+  const [bankData, setBankData] = useState([
+    {
+      id: 1,
+      title: "Bank BCA (Mobile Banking)",
+      options: ["Kode Bank: 121", "Rekening Tujuan: 0022378946246289"],
+    },
+    {
+      id: 2,
+      title: "Bank Mandiri (Mobile Banking)",
+      options: ["Kode Bank: 122", "Rekening Tujuan: 0022378946246289"],
+    },
+    {
+      id: 3,
+      title: "Bank BRI (Mobile Banking)",
+      options: ["Kode Bank: 123", "Rekening Tujuan: 0022378946246289"],
+    },
+  ]);
   const [cartDataItems, setcartDataItems] = useState([]);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -72,8 +90,8 @@ const CartScreen = ({ navigation }) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
-  const handleCheckout = () => {
-    navigation.navigate("CheckoutScreen");
+  const handleConfirmPayment = () => {
+    navigation.navigate("");
   };
 
   const increaseQuantity = (id) => {
@@ -106,57 +124,23 @@ const CartScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Carts</Text>
+        <Text style={styles.title}>Payment</Text>
       </View>
 
-      {cartData.length === 0 ? (
-        <Text style={styles.emptyCartText}>Keranjang Anda Kosong</Text>
-      ) : (
-        <>
-          {/* <Text style={styles.subtitle}>Pilih Waktu Pengiriman</Text> */}
-          <FlatList
-            data={cartItems}
-            renderItem={({ item }) => (
-              <View style={styles.cartItem}>
-                <Image source={item.image} style={styles.productImage} />
-                <View style={styles.itemDetails}>
-                  <Text style={styles.productName}>{item.name}</Text>
-                  <Text style={styles.productPrice}>
-                    Rp. {item.price.toLocaleString()}/kg
-                  </Text>
-                  <View style={styles.quantityContainer}>
-                    <TouchableOpacity onPress={() => decreaseQuantity(item.id)}>
-                      <Text style={styles.quantityButton}>-</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.productQuantity}>
-                      Jumlah: {item.quantity}
-                    </Text>
-                    <TouchableOpacity onPress={() => increaseQuantity(item.id)}>
-                      <Text style={styles.quantityButton}>+</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-                <TouchableOpacity onPress={() => removeItem(item.id)}>
-                  <Text style={styles.removeButton}>Hapus</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-            keyExtractor={(item) => item.id}
-          />
-          <View style={styles.totalContainer}>
-            <Text style={styles.totalText}>
-              Total Belanja: Rp. {totalAmount.toLocaleString()}
-            </Text>
-          </View>
+      <Text style={styles.subtitle}>Invoice</Text>
+      <View style={styles.invoiceDetailRow}>
+        <Text style={styles.invoiceDetaiLabel}>Label: </Text>
+        <Text style={styles.invoiceDetaiValue}>Value</Text>
+      </View>
 
-          <TouchableOpacity
-            style={styles.checkoutButton}
-            onPress={handleCheckout}
-          >
-            <Text style={styles.checkoutButtonText}>Checkout</Text>
-          </TouchableOpacity>
-        </>
-      )}
+      <Text style={styles.subtitle}>Pilih Cara Pembayaran</Text>
+      {bankData.map((bank, index) => (
+        <ExpandableItem key={index} title={bank.title} options={bank.options} />
+      ))}
+
+      <TouchableOpacity style={styles.button} onPress={handleConfirmPayment}>
+        <Text style={styles.buttonText}>Confirm Payment</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -181,77 +165,31 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    marginBottom: 20,
-  },
-  emptyCartText: {
-    fontSize: 18,
-    textAlign: "center",
-    marginTop: 50,
-  },
-  cartItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-    paddingBottom: 10,
-  },
-  productImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 10,
-    marginRight: 10,
-  },
-  itemDetails: {
-    flex: 1,
-  },
-  productName: {
-    fontSize: 18,
     fontWeight: "bold",
+    marginVertical: 14,
   },
-  productPrice: {
-    color: "#2E7D32",
-  },
-  productQuantity: {
-    marginTop: 5,
-  },
-  quantityContainer: {
+  invoiceDetailRow: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 5,
   },
-  quantityButton: {
-    backgroundColor: "#2E7D32",
-    color: "#fff",
-    padding: 5,
-    borderRadius: 5,
-    marginHorizontal: 5,
+  invoiceDetaiLabel: {
+    fontSize: 16,
   },
-  removeButton: {
-    color: "red",
-    marginLeft: 10,
+  invoiceDetaiValue: {
+    fontSize: 16,
   },
-  totalContainer: {
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 5,
-  },
-  totalText: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  checkoutButton: {
+  button: {
     marginTop: 20,
     backgroundColor: "#2E7D32",
     borderRadius: 5,
     padding: 15,
     alignItems: "center",
   },
-  checkoutButtonText: {
+  buttonText: {
     color: "#fff",
     fontSize: 18,
   },
 });
 
-export default CartScreen;
+export default PaymentScreen;

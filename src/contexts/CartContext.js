@@ -1,9 +1,7 @@
 import { createContext, useState, useContext } from "react";
 
-// Create the context
 const CartContext = createContext();
 
-// Cart provider component
 export const CartProvider = ({ children }) => {
   const [cartCheckoutItems, setCartCheckoutItems] = useState([]);
   const [cartItems, setCartItems] = useState([]);
@@ -25,12 +23,10 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  // Remove item from the cart
   const removeItemFromCart = (itemId) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
   };
 
-  // Clear the cart
   const clearCart = () => {
     setCartItems([]);
   };

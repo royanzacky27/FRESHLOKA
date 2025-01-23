@@ -135,7 +135,7 @@ const ProfileScreen = ({ navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navButton}
-          onPress={() => navigation.navigate("Cart")}
+          onPress={() => navigation.navigate("CartScreen")}
         >
           <Ionicons name="cart" size={24} color="white" />
           <Text style={styles.navButtonText}>Cart</Text>

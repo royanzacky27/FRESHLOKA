@@ -13,7 +13,7 @@ import { useAssets } from "../contexts/AssetsContext";
 import { CART_URL } from "../config/constants";
 import axios from "axios";
 
-const CartScreen = ({ navigation }) => {
+const CheckoutScreeen = ({ navigation }) => {
   const { isAuthenticated, token } = useAuth();
   const { assets } = useAssets();
   const [cartData, setCartData] = useState([]);
@@ -73,7 +73,7 @@ const CartScreen = ({ navigation }) => {
   };
 
   const handleCheckout = () => {
-    navigation.navigate("CheckoutScreen");
+    navigation.navigate("PaymentScreen");
   };
 
   const increaseQuantity = (id) => {
@@ -106,7 +106,7 @@ const CartScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Carts</Text>
+        <Text style={styles.title}>Checkout</Text>
       </View>
 
       {cartData.length === 0 ? (
@@ -143,6 +143,7 @@ const CartScreen = ({ navigation }) => {
             )}
             keyExtractor={(item) => item.id}
           />
+
           <View style={styles.totalContainer}>
             <Text style={styles.totalText}>
               Total Belanja: Rp. {totalAmount.toLocaleString()}
@@ -153,7 +154,7 @@ const CartScreen = ({ navigation }) => {
             style={styles.checkoutButton}
             onPress={handleCheckout}
           >
-            <Text style={styles.checkoutButtonText}>Checkout</Text>
+            <Text style={styles.checkoutButtonText}>Confirm Order</Text>
           </TouchableOpacity>
         </>
       )}
@@ -254,4 +255,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CartScreen;
+export default CheckoutScreeen;
