@@ -11,24 +11,14 @@ import {
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useAssets } from "../contexts/AssetsContext";
 import { useAuth } from "../contexts/AuthContext";
-import { CART_URL } from "../config/constants";
 import { useCart } from "../contexts/CartContext";
-import axios from "axios";
 
 const ProductDetailScreen = ({ route, navigation }) => {
   const { product } = route.params;
   const { isAuthenticated, token } = useAuth();
   const { assets } = useAssets();
   const [isLoading, setIsLoading] = useState(false);
-
-  const {
-    cartItems,
-    cartCheckoutItems,
-    setCartCheckoutItems,
-    addItemToCart,
-    removeItemFromCart,
-    clearCart,
-  } = useCart();
+  const { createItemToCart } = useCart();
 
   const [quantity, setQuantity] = useState(1);
 
@@ -39,46 +29,22 @@ const ProductDetailScreen = ({ route, navigation }) => {
     }
   }, [isAuthenticated, navigation]);
 
-  const createCart = async () => {
-    try {
-      if (cartItems.length > 0) {
-        const response = await axios.post(
-          CART_URL,
-          {
-            items: cartItems,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const result = response.data;
-        if (response.status === 201) {
-          Alert.alert(
-            "Cart Updated",
-            "The item has been successfully added to your cart.",
-            [
-              { text: "Cancel", style: "cancel" },
-              {
-                text: "Checkout",
-                onPress: () => {
-                  navigation.navigate("CartScreen");
-                },
-              },
-            ],
-            { cancelable: true }
-          );
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const handleAddToCart = async () => {
-    await addItemToCart({ id: product._id, quantity });
-    await createCart();
+    await createItemToCart({ id: product._id, quantity }, token);
+    Alert.alert(
+      "Cart Updated",
+      "The item has been successfully added to your cart.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Check Carts",
+          onPress: () => {
+            navigation.navigate("CartScreen");
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   if (isLoading) {

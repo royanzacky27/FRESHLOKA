@@ -10,84 +10,29 @@ import {
 } from "react-native";
 import { useAuth } from "../contexts/AuthContext";
 import { useAssets } from "../contexts/AssetsContext";
-import { CART_URL } from "../config/constants";
-import axios from "axios";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { useCart } from "../contexts/CartContext";
 
 const CartScreen = ({ navigation }) => {
   const { isAuthenticated, token } = useAuth();
   const { assets } = useAssets();
-  const [cartData, setCartData] = useState([]);
-  const [cartDataItems, setcartDataItems] = useState([]);
+  const { productsInCart, fetchCartData } = useCart();
   const [isLoading, setIsLoading] = useState(true);
+  const [totalAmount, setTotalAmount] = useState(0);
 
   useEffect(() => {
     if (!isAuthenticated) {
       navigation.replace("Auth");
       return;
     }
-    fetchCartData();
-
-    cartData.forEach((obj) => {
-      const items = obj.items;
-      items.forEach((item) => {
-        console.log(item.product["_id"], "product items");
-        console.log(item.quantity, "product items");
-      });
-    });
-  }, [isAuthenticated, navigation]);
-
-  const toggleCheckbox = (id) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, selected: !item.selected } : item
-      )
-    );
-  };
-
-  const fetchCartData = async () => {
-    try {
-      const response = await axios.get(CART_URL, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const result = response.data;
-      if (response.status === 200) {
-        setCartData(result.data);
-      }
+    fetchCartData(token);
+    if (productsInCart) {
       setIsLoading(false);
-    } catch (error) {
-      console.error(error);
+      productsInCart.forEach((element) => {
+        setTotalAmount(totalAmount + element.quantity * element.price);
+      });
     }
-  };
-
-  const [cartItems, setCartItems] = useState([
-    {
-      id: "1",
-      name: "Pisang Barangan",
-      price: 96000,
-      quantity: 2,
-      image: require("../assets/pisang.png"),
-    },
-    {
-      id: "2",
-      name: "Kiwi",
-      price: 15000,
-      quantity: 1,
-      image: require("../assets/kiwi.png"),
-      selected: false,
-    },
-  ]);
-
-  const totalAmount = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
-
-  const removeItem = (id) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
-  };
+  }, [isAuthenticated, token, navigation]);
 
   const handleRemoveItem = (id) => {
     console.log(id, "remove");
@@ -98,21 +43,23 @@ const CartScreen = ({ navigation }) => {
   };
 
   const increaseQuantity = (id) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
+    console.log(id);
+    // setCartItems((prevItems) =>
+    //   prevItems.map((item) =>
+    //     item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+    //   )
+    // );
   };
 
   const decreaseQuantity = (id) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-    );
+    console.log(id);
+    // setCartItems((prevItems) =>
+    //   prevItems.map((item) =>
+    //     item.id === id && item.quantity > 1
+    //       ? { ...item, quantity: item.quantity - 1 }
+    //       : item
+    //   )
+    // );
   };
 
   if (isLoading) {
@@ -129,46 +76,45 @@ const CartScreen = ({ navigation }) => {
       <View style={styles.header}>
         <Text style={styles.title}>Carts</Text>
       </View>
+
       <FlatList
-        data={cartItems}
+        data={productsInCart}
         renderItem={({ item }) => (
           <View style={styles.cartItem}>
-            {/* <CheckBox
-              value={item.selected}
-              onValueChange={() => toggleCheckbox(item.id)}
-            /> */}
-            <Image source={item.image} style={styles.productImage} />
+            <Image source={assets[item.imageUrl]} style={styles.productImage} />
             <View style={styles.itemDetails}>
               <Text style={styles.productName}>{item.name}</Text>
               <Text style={styles.productPrice}>
                 {`Rp ${item.price.toLocaleString()}/pcs`}
               </Text>
               <View style={styles.quantityContainer}>
-                <TouchableOpacity onPress={() => decreaseQuantity(item.id)}>
+                <TouchableOpacity onPress={() => decreaseQuantity(item._id)}>
                   <AntDesign name="minuscircleo" size={16} color="black" />
                 </TouchableOpacity>
                 <Text style={styles.productQuantity}>{item.quantity}</Text>
-                <TouchableOpacity onPress={() => increaseQuantity(item.id)}>
+                <TouchableOpacity onPress={() => increaseQuantity(item._id)}>
                   <AntDesign name="pluscircleo" size={16} color="black" />
                 </TouchableOpacity>
               </View>
             </View>
 
-            <TouchableOpacity onPress={() => handleRemoveItem(item.id)}>
+            <TouchableOpacity onPress={() => handleRemoveItem(item._id)}>
               <AntDesign name="delete" size={16} color="red" />
             </TouchableOpacity>
           </View>
         )}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         ListEmptyComponent={() => (
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>Empty</Text>
           </View>
         )}
       />
+
       <Text style={styles.totalText}>
         Total: Rp {totalAmount.toLocaleString()}
       </Text>
+
       <TouchableOpacity style={styles.checkoutButton} onPress={handleCheckout}>
         <Text style={styles.checkoutButtonText}>Checkout</Text>
       </TouchableOpacity>
@@ -299,6 +245,19 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     color: "#555",
+  },
+  emptyContainer: {
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "#777",
   },
 });
 

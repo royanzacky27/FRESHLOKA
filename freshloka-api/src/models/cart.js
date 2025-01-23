@@ -15,17 +15,15 @@ const cartSchema = new mongoose.Schema(
           required: true,
           validate: {
             validator: async function (value) {
-              // Validasi agar quantity tidak lebih dari stok produk
               const product = await mongoose
                 .model("Product")
                 .findById(this.product);
               if (product.stock < value) {
-                // Menampilkan stok yang tersedia dalam pesan error
                 throw new Error(
                   `Quantity cannot be greater than product stock. Available stock: ${product.stock}`
                 );
               }
-              return true; // Jika validasi berhasil
+              return true;
             },
             message: "Quantity cannot be greater than product stock",
           },
@@ -41,6 +39,7 @@ const cartSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      unique: true,
     },
     createdAt: { type: Date, default: Date.now },
   },
@@ -49,5 +48,9 @@ const cartSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Tambahkan index unik pada createdBy jika belum ada
+cartSchema.index({ createdBy: 1 }, { unique: true });
+
 const Cart = mongoose.model("Cart", cartSchema);
 module.exports = Cart;

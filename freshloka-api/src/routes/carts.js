@@ -69,13 +69,15 @@ router.get("/", authenticateToken, checkTokenBlacklist, async (req, res) => {
     });
   }
 });
-
 router.post("/", authenticateToken, checkTokenBlacklist, async (req, res) => {
   try {
     const { items } = req.body;
     const userId = req.user._id;
 
-    const cartItems = [];
+    let cart = await Cart.findOne({ createdBy: userId });
+    if (!cart) {
+      cart = new Cart({ createdBy: userId, items: [] });
+    }
 
     for (let item of items) {
       const product = await Product.findById(item.id);
@@ -92,27 +94,38 @@ router.post("/", authenticateToken, checkTokenBlacklist, async (req, res) => {
         });
       }
 
-      cartItems.push({
-        product: product,
-        quantity: item.quantity,
-      });
-    }
+      // Cek apakah produk sudah ada dalam cart
+      const existingItem = cart.items.find(
+        (cartItem) => cartItem.product.toString() === product._id.toString()
+      );
 
-    const newCart = new Cart({
-      createdBy: userId,
-      items: cartItems,
-    });
-    await newCart.save();
+      if (existingItem) {
+        // Jika produk sudah ada, tambahkan kuantitas
+        existingItem.quantity += item.quantity;
+      } else {
+        // Jika produk belum ada, tambahkan produk baru ke cart
+        cart.items.push({
+          product: product._id,
+          quantity: item.quantity,
+        });
+      }
 
-    for (let item of cartItems) {
-      const product = await Product.findById(item.product._id);
+      // Update stok produk
       product.stock -= item.quantity;
       await product.save();
     }
 
+    // Simpan cart
+    await cart.save();
+
+    // Populate detail product untuk response
+    const populatedCart = await Cart.findById(cart._id).populate(
+      "items.product"
+    );
+
     return res.status(201).json({
       message: "Products added to cart successfully",
-      data: newCart,
+      data: populatedCart,
     });
   } catch (error) {
     console.error("Error adding products to cart:", error);
