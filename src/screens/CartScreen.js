@@ -146,7 +146,7 @@ const CartScreen = ({ navigation }) => {
                   <AntDesign name="minuscircleo" size={16} color="black" />
                 </TouchableOpacity>
                 <Text style={styles.productQuantity}>{item.quantity}</Text>
-                <TouchableOpacity onPress={() => decreaseQuantity(item.id)}>
+                <TouchableOpacity onPress={() => increaseQuantity(item.id)}>
                   <AntDesign name="pluscircleo" size={16} color="black" />
                 </TouchableOpacity>
               </View>
