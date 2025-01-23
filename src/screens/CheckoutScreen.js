@@ -113,7 +113,6 @@ const CheckoutScreeen = ({ navigation }) => {
         <Text style={styles.emptyCartText}>Keranjang Anda Kosong</Text>
       ) : (
         <>
-          {/* <Text style={styles.subtitle}>Pilih Waktu Pengiriman</Text> */}
           <FlatList
             data={cartItems}
             renderItem={({ item }) => (
@@ -150,11 +149,8 @@ const CheckoutScreeen = ({ navigation }) => {
             </Text>
           </View>
 
-          <TouchableOpacity
-            style={styles.checkoutButton}
-            onPress={handleCheckout}
-          >
-            <Text style={styles.checkoutButtonText}>Confirm Order</Text>
+          <TouchableOpacity style={styles.button} onPress={handleCheckout}>
+            <Text style={styles.buttonText}>Confirm Order</Text>
           </TouchableOpacity>
         </>
       )}
@@ -179,7 +175,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: 70,
+    paddingTop: 50,
+    marginBottom: 10,
   },
   title: {
     fontSize: 20,
@@ -249,14 +246,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
-  checkoutButton: {
+  button: {
     marginTop: 20,
     backgroundColor: "#2E7D32",
     borderRadius: 5,
     padding: 15,
     alignItems: "center",
   },
-  checkoutButtonText: {
+  buttonText: {
     color: "#fff",
     fontSize: 18,
   },

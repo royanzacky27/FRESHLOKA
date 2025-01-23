@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AUTH_ME_URL, LOGIN_URL, LOGOUT_URL } from "../config/constants";
 import axios from "axios";
+import { Alert } from "react-native";
 
 const AuthContext = createContext();
 
@@ -33,21 +34,21 @@ export const AuthProvider = ({ children }) => {
     return null;
   };
 
-  const logout = async (token) => {
+  const logout = async (token, navigation) => {
     const response = await axios.get(LOGOUT_URL, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
     const result = response.data;
-    print(result);
     if (response.status === 200) {
-      await AsyncStorage.removeItem("authToken");
-      setToken(null);
-      setIsAuthenticated(false);
-      return result;
+      navigation.replace("Auth");
+      Alert.alert("Logout", "Successfully!");
+      // return result;
+    } else {
+      // return null;
+      Alert.alert("Logout", "Failed!");
     }
-    return null;
   };
 
   const authMe = async (token) => {

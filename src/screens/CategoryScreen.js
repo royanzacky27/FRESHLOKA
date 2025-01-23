@@ -132,7 +132,7 @@ const CategoryScreen = ({ route, navigation }) => {
         contentContainerStyle={styles.productList}
         ListEmptyComponent={() => (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>Belum ada data</Text>
+            <Text style={styles.emptyText}>Empty</Text>
           </View>
         )}
       />

@@ -12,6 +12,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useAssets } from "../contexts/AssetsContext";
 import { CART_URL } from "../config/constants";
 import axios from "axios";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 const CartScreen = ({ navigation }) => {
   const { isAuthenticated, token } = useAuth();
@@ -35,6 +36,14 @@ const CartScreen = ({ navigation }) => {
       });
     });
   }, [isAuthenticated, navigation]);
+
+  const toggleCheckbox = (id) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id ? { ...item, selected: !item.selected } : item
+      )
+    );
+  };
 
   const fetchCartData = async () => {
     try {
@@ -61,6 +70,14 @@ const CartScreen = ({ navigation }) => {
       quantity: 2,
       image: require("../assets/pisang.png"),
     },
+    {
+      id: "2",
+      name: "Kiwi",
+      price: 15000,
+      quantity: 1,
+      image: require("../assets/kiwi.png"),
+      selected: false,
+    },
   ]);
 
   const totalAmount = cartItems.reduce(
@@ -70,6 +87,10 @@ const CartScreen = ({ navigation }) => {
 
   const removeItem = (id) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  };
+
+  const handleRemoveItem = (id) => {
+    console.log(id, "remove");
   };
 
   const handleCheckout = () => {
@@ -108,55 +129,54 @@ const CartScreen = ({ navigation }) => {
       <View style={styles.header}>
         <Text style={styles.title}>Carts</Text>
       </View>
-
-      {cartData.length === 0 ? (
-        <Text style={styles.emptyCartText}>Keranjang Anda Kosong</Text>
-      ) : (
-        <>
-          {/* <Text style={styles.subtitle}>Pilih Waktu Pengiriman</Text> */}
-          <FlatList
-            data={cartItems}
-            renderItem={({ item }) => (
-              <View style={styles.cartItem}>
-                <Image source={item.image} style={styles.productImage} />
-                <View style={styles.itemDetails}>
-                  <Text style={styles.productName}>{item.name}</Text>
-                  <Text style={styles.productPrice}>
-                    Rp. {item.price.toLocaleString()}/kg
-                  </Text>
-                  <View style={styles.quantityContainer}>
-                    <TouchableOpacity onPress={() => decreaseQuantity(item.id)}>
-                      <Text style={styles.quantityButton}>-</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.productQuantity}>
-                      Jumlah: {item.quantity}
-                    </Text>
-                    <TouchableOpacity onPress={() => increaseQuantity(item.id)}>
-                      <Text style={styles.quantityButton}>+</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-                <TouchableOpacity onPress={() => removeItem(item.id)}>
-                  <Text style={styles.removeButton}>Hapus</Text>
+      <FlatList
+        data={cartItems}
+        renderItem={({ item }) => (
+          <View style={styles.cartItem}>
+            {/* <CheckBox
+              value={item.selected}
+              onValueChange={() => toggleCheckbox(item.id)}
+            /> */}
+            <Image source={item.image} style={styles.productImage} />
+            <View style={styles.itemDetails}>
+              <Text style={styles.productName}>{item.name}</Text>
+              <Text style={styles.productPrice}>Rp {item.price}/pcs</Text>
+              <View style={styles.quantityContainer}>
+                <TouchableOpacity onPress={() => decreaseQuantity(item.id)}>
+                  <AntDesign name="minuscircleo" size={16} color="black" />
+                </TouchableOpacity>
+                <Text style={styles.productQuantity}>{item.quantity}</Text>
+                <TouchableOpacity onPress={() => decreaseQuantity(item.id)}>
+                  <AntDesign name="pluscircleo" size={16} color="black" />
                 </TouchableOpacity>
               </View>
-            )}
-            keyExtractor={(item) => item.id}
-          />
-          <View style={styles.totalContainer}>
-            <Text style={styles.totalText}>
-              Total Belanja: Rp. {totalAmount.toLocaleString()}
-            </Text>
-          </View>
+            </View>
 
-          <TouchableOpacity
-            style={styles.checkoutButton}
-            onPress={handleCheckout}
-          >
-            <Text style={styles.checkoutButtonText}>Checkout</Text>
-          </TouchableOpacity>
-        </>
-      )}
+            <TouchableOpacity onPress={() => handleRemoveItem(item.id)}>
+              <AntDesign name="delete" size={16} color="red" />
+            </TouchableOpacity>
+          </View>
+        )}
+        keyExtractor={(item) => item.id}
+        ListEmptyComponent={() => (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>Empty</Text>
+          </View>
+        )}
+      />
+      <Text style={styles.totalText}>
+        Total: Rp {totalAmount.toLocaleString()}
+      </Text>
+      <TouchableOpacity style={styles.checkoutButton} onPress={handleCheckout}>
+        <Text style={styles.checkoutButtonText}>Checkout</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={styles.button2}
+      >
+        <Text style={styles.button2Text}>Back</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -171,7 +191,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: 70,
+    paddingTop: 50,
+    marginBottom: 10,
   },
   title: {
     fontSize: 20,
@@ -213,12 +234,14 @@ const styles = StyleSheet.create({
     color: "#2E7D32",
   },
   productQuantity: {
-    marginTop: 5,
+    fontSize: 16,
+    fontWeight: "bold",
   },
   quantityContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 5,
+    marginVertical: 12,
+    gap: 4,
   },
   quantityButton: {
     backgroundColor: "#2E7D32",
@@ -240,6 +263,8 @@ const styles = StyleSheet.create({
   totalText: {
     fontSize: 18,
     fontWeight: "bold",
+    textAlign: "center",
+    color: "#2E7D32",
   },
   checkoutButton: {
     marginTop: 20,
@@ -251,6 +276,16 @@ const styles = StyleSheet.create({
   checkoutButtonText: {
     color: "#fff",
     fontSize: 18,
+  },
+  button2: {
+    margin: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  button2Text: {
+    color: "#2E7D32",
+    fontSize: 16,
   },
 });
 

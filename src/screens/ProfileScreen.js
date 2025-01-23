@@ -49,7 +49,7 @@ const ProfileScreen = ({ navigation }) => {
         {
           text: "Logout",
           onPress: async () => {
-            await logout(token);
+            await logout(token, navigation);
           },
         },
       ],
