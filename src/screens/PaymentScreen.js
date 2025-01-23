@@ -14,10 +14,11 @@ import { CART_URL } from "../config/constants";
 import axios from "axios";
 import ExpandableItem from "./ExpandableItem";
 
-const PaymentScreen = ({ navigation }) => {
+const PaymentScreen = ({ route, navigation }) => {
+  const { total } = route.params;
   const { isAuthenticated, token } = useAuth();
-  const { assets } = useAssets();
-  const [cartData, setCartData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [bankData, setBankData] = useState([
     {
       id: 1,
@@ -35,81 +36,17 @@ const PaymentScreen = ({ navigation }) => {
       options: ["Kode Bank: 123", "Rekening Tujuan: 0022378946246289"],
     },
   ]);
-  const [cartDataItems, setcartDataItems] = useState([]);
-
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!isAuthenticated) {
       navigation.replace("Auth");
+      return;
     }
-    fetchCartData();
-
-    cartData.forEach((obj) => {
-      const items = obj.items;
-      items.forEach((item) => {
-        console.log(item.product["_id"], "product items");
-        console.log(item.quantity, "product items");
-      });
-    });
+    setIsLoading(false);
   }, [isAuthenticated, navigation]);
-
-  const fetchCartData = async () => {
-    try {
-      const response = await axios.get(CART_URL, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const result = response.data;
-      if (response.status === 200) {
-        setCartData(result.data);
-      }
-      setIsLoading(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const [cartItems, setCartItems] = useState([
-    {
-      id: "1",
-      name: "Pisang Barangan",
-      price: 96000,
-      quantity: 2,
-      image: require("../assets/pisang.png"),
-    },
-  ]);
-
-  const totalAmount = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
-
-  const removeItem = (id) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
-  };
 
   const handleConfirmPayment = () => {
     navigation.navigate("Home");
-  };
-
-  const increaseQuantity = (id) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
-  };
-
-  const decreaseQuantity = (id) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-    );
   };
 
   if (isLoading) {
@@ -129,8 +66,10 @@ const PaymentScreen = ({ navigation }) => {
 
       <Text style={styles.subtitle}>Invoice</Text>
       <View style={styles.invoiceDetailRow}>
-        <Text style={styles.invoiceDetaiLabel}>Label: </Text>
-        <Text style={styles.invoiceDetaiValue}>Value</Text>
+        <Text style={styles.invoiceDetaiLabel}>Total: </Text>
+        <Text style={styles.invoiceDetaiValue}>
+          Rp {total.toLocaleString()}
+        </Text>
       </View>
 
       <Text style={styles.subtitle}>Pilih Cara Pembayaran</Text>
@@ -174,7 +113,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     fontWeight: "bold",
-    marginVertical: 14,
+    marginVertical: 20,
   },
   invoiceDetailRow: {
     flexDirection: "row",
@@ -183,9 +122,12 @@ const styles = StyleSheet.create({
   },
   invoiceDetaiLabel: {
     fontSize: 16,
+    color: "grey",
   },
   invoiceDetaiValue: {
     fontSize: 16,
+    color: "#2E7D32",
+    fontWeight: "bold",
   },
   button: {
     marginTop: 20,
@@ -207,6 +149,17 @@ const styles = StyleSheet.create({
   button2Text: {
     color: "#2E7D32",
     fontSize: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#555",
   },
 });
 

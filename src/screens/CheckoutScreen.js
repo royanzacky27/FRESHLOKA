@@ -2,39 +2,52 @@ import { useState, useEffect } from "react";
 import {
   View,
   Text,
-  FlatList,
   StyleSheet,
   TouchableOpacity,
-  Image,
   ActivityIndicator,
+  TextInput,
 } from "react-native";
 import { useAuth } from "../contexts/AuthContext";
 import { useAssets } from "../contexts/AssetsContext";
 import { CART_URL } from "../config/constants";
 import axios from "axios";
 
-const CheckoutScreeen = ({ navigation }) => {
-  const { isAuthenticated, token } = useAuth();
+const CheckoutScreeen = ({ route, navigation }) => {
+  const param = route.param;
+  const { isAuthenticated, token, authMe } = useAuth();
   const { assets } = useAssets();
-  const [cartData, setCartData] = useState([]);
-  const [cartDataItems, setcartDataItems] = useState([]);
 
+  const [userData, setUserData] = useState(null);
+  const [cartData, setCartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [deliveryTime, setDeliveryTime] = useState(30);
+  const [adminFee, setAdminFee] = useState(1500);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     if (!isAuthenticated) {
       navigation.replace("Auth");
     }
     fetchCartData();
+    fetchUserData();
+    // cartData.forEach((obj) => {
+    //   const items = obj.items;
+    //   items.forEach((item) => {
+    //     console.log(item.product["_id"], "product items");
+    //     console.log(item.quantity, "product items");
+    //   });
+    // });
+  }, [isAuthenticated, token, authMe, navigation]);
 
-    cartData.forEach((obj) => {
-      const items = obj.items;
-      items.forEach((item) => {
-        console.log(item.product["_id"], "product items");
-        console.log(item.quantity, "product items");
-      });
-    });
-  }, [isAuthenticated, navigation]);
+  const fetchUserData = async () => {
+    try {
+      const result = await authMe(token);
+      setUserData(result.data);
+      setIsLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const fetchCartData = async () => {
     try {
@@ -53,45 +66,8 @@ const CheckoutScreeen = ({ navigation }) => {
     }
   };
 
-  const [cartItems, setCartItems] = useState([
-    {
-      id: "1",
-      name: "Pisang Barangan",
-      price: 96000,
-      quantity: 2,
-      image: require("../assets/pisang.png"),
-    },
-  ]);
-
-  const totalAmount = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
-
-  const removeItem = (id) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
-  };
-
   const handleCheckout = () => {
-    navigation.navigate("PaymentScreen");
-  };
-
-  const increaseQuantity = (id) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
-  };
-
-  const decreaseQuantity = (id) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-    );
+    navigation.navigate("PaymentScreen", { total });
   };
 
   if (isLoading) {
@@ -109,51 +85,41 @@ const CheckoutScreeen = ({ navigation }) => {
         <Text style={styles.title}>Checkout</Text>
       </View>
 
-      {cartData.length === 0 ? (
-        <Text style={styles.emptyCartText}>Keranjang Anda Kosong</Text>
-      ) : (
-        <>
-          <FlatList
-            data={cartItems}
-            renderItem={({ item }) => (
-              <View style={styles.cartItem}>
-                <Image source={item.image} style={styles.productImage} />
-                <View style={styles.itemDetails}>
-                  <Text style={styles.productName}>{item.name}</Text>
-                  <Text style={styles.productPrice}>
-                    Rp. {item.price.toLocaleString()}/kg
-                  </Text>
-                  <View style={styles.quantityContainer}>
-                    <TouchableOpacity onPress={() => decreaseQuantity(item.id)}>
-                      <Text style={styles.quantityButton}>-</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.productQuantity}>
-                      Jumlah: {item.quantity}
-                    </Text>
-                    <TouchableOpacity onPress={() => increaseQuantity(item.id)}>
-                      <Text style={styles.quantityButton}>+</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-                <TouchableOpacity onPress={() => removeItem(item.id)}>
-                  <Text style={styles.removeButton}>Hapus</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-            keyExtractor={(item) => item.id}
-          />
+      <Text style={styles.label}>Delivery address</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Address"
+        value={userData.address}
+        editable={false}
+      />
 
-          <View style={styles.totalContainer}>
-            <Text style={styles.totalText}>
-              Total Belanja: Rp. {totalAmount.toLocaleString()}
-            </Text>
-          </View>
+      <Text style={styles.label}>Delivery time</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Delivery Time"
+        value={`${deliveryTime} minutes`}
+        editable={false}
+      />
 
-          <TouchableOpacity style={styles.button} onPress={handleCheckout}>
-            <Text style={styles.buttonText}>Confirm Order</Text>
-          </TouchableOpacity>
-        </>
-      )}
+      <Text style={styles.label}>Admin Fee</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="APP Fee"
+        value={`Rp ${adminFee}`}
+        editable={false}
+      />
+
+      <Text style={styles.label}>Total</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Total"
+        value={`Rp ${total}`}
+        editable={false}
+      />
+
+      <TouchableOpacity style={styles.button} onPress={handleCheckout}>
+        <Text style={styles.buttonText}>Confirm Order</Text>
+      </TouchableOpacity>
 
       <TouchableOpacity
         onPress={() => navigation.goBack()}
@@ -184,67 +150,18 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: "center",
   },
-  subtitle: {
-    fontSize: 16,
-    marginBottom: 20,
+  label: {
+    paddingVertical: 10,
+    color: "grey",
   },
-  emptyCartText: {
-    fontSize: 18,
-    textAlign: "center",
-    marginTop: 50,
-  },
-  cartItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-    paddingBottom: 10,
-  },
-  productImage: {
-    width: 80,
-    height: 80,
+  input: {
+    height: 50,
+    borderColor: "#ccc",
+    borderWidth: 1,
     borderRadius: 10,
-    marginRight: 10,
-  },
-  itemDetails: {
-    flex: 1,
-  },
-  productName: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  productPrice: {
-    color: "#2E7D32",
-  },
-  productQuantity: {
-    marginTop: 5,
-  },
-  quantityContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 5,
-  },
-  quantityButton: {
-    backgroundColor: "#2E7D32",
-    color: "#fff",
-    padding: 5,
-    borderRadius: 5,
-    marginHorizontal: 5,
-  },
-  removeButton: {
-    color: "red",
-    marginLeft: 10,
-  },
-  totalContainer: {
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 5,
-  },
-  totalText: {
-    fontSize: 18,
-    fontWeight: "bold",
+    marginBottom: 15,
+    paddingHorizontal: 15,
+    backgroundColor: "#f9f9f9",
   },
   button: {
     marginTop: 20,
@@ -266,6 +183,17 @@ const styles = StyleSheet.create({
   button2Text: {
     color: "#2E7D32",
     fontSize: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#555",
   },
 });
 

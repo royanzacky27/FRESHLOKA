@@ -287,6 +287,17 @@ const styles = StyleSheet.create({
     color: "#2E7D32",
     fontSize: 16,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#555",
+  },
 });
 
 export default CartScreen;

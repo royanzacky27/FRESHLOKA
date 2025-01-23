@@ -105,6 +105,7 @@ router.get("/me", authenticateToken, checkTokenBlacklist, (req, res) => {
         email: req.user.email,
         name: req.user.name,
         isAdmin: req.user.isAdmin,
+        address: req.user.address,
       },
     });
   } catch (error) {

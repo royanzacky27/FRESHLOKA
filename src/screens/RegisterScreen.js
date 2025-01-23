@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
 } from "react-native";
 
 const RegisterScreen2 = ({ route, navigation }) => {
-  const { name, email, password } = route.params; // Mengambil data dari halaman sebelumnya
+  const { name, email, password } = route.params;
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [gender, setGender] = useState("");
