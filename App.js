@@ -96,7 +96,7 @@ const App = () => {
               <Stack.Screen
                 name="Profile"
                 component={ProfileScreen}
-                options={{ headerShown: true, title: "Profil" }}
+                options={{ headerShown: false, title: "Profil" }}
               />
             </Stack.Navigator>
           </NavigationContainer>
