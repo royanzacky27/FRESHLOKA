@@ -36,8 +36,8 @@ export const CartProvider = ({ children }) => {
     setCartItems([]);
   };
 
-  const countTotalAmount = async () => {
-    const total = await productsInCart.reduce((acc, element) => {
+  const countTotalAmount = () => {
+    const total = productsInCart.reduce((acc, element) => {
       return acc + element.quantity * element.price; // Akumulasi total
     }, 0); // Mulai akumulasi dari 0
     setTotalAmount(total);
@@ -57,18 +57,24 @@ export const CartProvider = ({ children }) => {
           const id = data[0]._id;
           setCartId(id);
           setCartItems(result.data);
+          let totalAmount = 0;
           const products = data.flatMap((obj) => {
-            return obj.items.map((item) => ({
-              ...item.product,
-              quantity: item.quantity,
-              cartId: obj._id,
-            }));
+            return obj.items.map((item) => {
+              // Hitung total sambil memetakan produk
+              totalAmount += item.quantity * item.product.price;
+              return {
+                ...item.product,
+                quantity: item.quantity,
+                cartId: obj._id,
+              };
+            });
           });
-          console.log(products);
+
           setProductInCart(products);
-          countTotalAmount();
+          setTotalAmount(totalAmount);
         } else {
           setCartItems([]);
+          setProductInCart([]);
           setError("Failed to update cart: No items found in response");
         }
       })
