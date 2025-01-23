@@ -8,6 +8,8 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [productsInCart, setProductInCart] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
+  const [cartId, setCartId] = useState(null);
+  const [error, setError] = useState(null);
 
   // Add item to the cart
   const addItemToCart = (item) => {
@@ -42,43 +44,48 @@ export const CartProvider = ({ children }) => {
   };
 
   const fetchCartData = async (token) => {
-    try {
-      const response = await axios.get(CART_URL, {
+    await axios
+      .get(CART_URL, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+      })
+      .then((response) => {
+        const result = response.data;
+        const data = result.data;
+        if (result && data.length > 0) {
+          const id = data[0]._id;
+          setCartId(id);
+          setCartItems(result.data);
+          const products = data.flatMap((obj) => {
+            return obj.items.map((item) => ({
+              ...item.product,
+              quantity: item.quantity,
+              cartId: obj._id,
+            }));
+          });
+          console.log(products);
+          setProductInCart(products);
+          countTotalAmount();
+        } else {
+          setError("Failed to update cart: No items found in response");
+        }
+      })
+      .catch((err) => {
+        console.log("Error adding item to cart:", err);
+
+        // More detailed error handling
+        if (err.response) {
+          // The request was made, but the server responded with an error
+          setError(err.response.data.message || "An error occurred");
+        } else if (err.request) {
+          // The request was made, but no response was received
+          setError("No response received from server");
+        } else {
+          // Something else went wrong
+          setError(err.message);
+        }
       });
-
-      const result = response.data;
-      if (result && result.data) {
-        setCartItems(result.data);
-        const products = cartItems.flatMap((obj) => {
-          return obj.items.map((item) => ({
-            ...item.product,
-            quantity: item.quantity,
-            cartId: obj._id,
-          }));
-        });
-        setProductInCart(products);
-        console.log(productsInCart);
-      } else {
-        setError("Failed to update cart: No items found in response");
-      }
-    } catch (err) {
-      console.error("Error adding item to cart:", err);
-
-      // More detailed error handling
-      if (err.response) {
-        // The request was made, but the server responded with an error
-        setError(err.response.data.message || "An error occurred");
-      } else if (err.request) {
-        // The request was made, but no response was received
-        setError("No response received from server");
-      } else {
-        // Something else went wrong
-        setError(err.message);
-      }
-    }
   };
 
   const createItemToCart = async (item, token) => {
@@ -121,6 +128,7 @@ export const CartProvider = ({ children }) => {
   return (
     <CartContext.Provider
       value={{
+        cartId,
         cartItems,
         productsInCart,
         totalAmount,

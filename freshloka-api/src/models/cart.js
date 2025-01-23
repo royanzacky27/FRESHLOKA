@@ -39,7 +39,6 @@ const cartSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      unique: true,
     },
     createdAt: { type: Date, default: Date.now },
   },
@@ -50,7 +49,10 @@ const cartSchema = new mongoose.Schema(
 );
 
 // Tambahkan index unik pada createdBy jika belum ada
-cartSchema.index({ createdBy: 1 }, { unique: true });
+// cartSchema.index(
+//   { createdBy: 1, status: 1 },
+//   { unique: true, partialFilterExpression: { status: "CHECKOUT" } }
+// );
 
 const Cart = mongoose.model("Cart", cartSchema);
 module.exports = Cart;

@@ -8,6 +8,7 @@ const FORGOT_PASSWORD_CHANGE_URL = `${API_URL}/auth/forgot-password/change`;
 const CATEGORY_URL = `${API_URL}/categories`;
 const PRODUCTS_URL = `${API_URL}/products`;
 const CART_URL = `${API_URL}/carts`;
+const CHECKOUT_URL = `${API_URL}/orders/checkout`;
 
 export {
   API_URL,
@@ -20,4 +21,5 @@ export {
   CATEGORY_URL,
   PRODUCTS_URL,
   CART_URL,
+  CHECKOUT_URL,
 };

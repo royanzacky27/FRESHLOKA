@@ -13,16 +13,13 @@ import { CART_URL } from "../config/constants";
 import axios from "axios";
 
 const CheckoutScreeen = ({ route, navigation }) => {
-  const { total } = route.params;
+  const { deliveryTime, deliveryFee, totalPrice, totalAmount } = route.params;
   const { isAuthenticated, token, authMe } = useAuth();
   const { assets } = useAssets();
-
   const [userData, setUserData] = useState(null);
   const [cartData, setCartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [deliveryTime, setDeliveryTime] = useState(30);
   const [adminFee, setAdminFee] = useState(1500);
-  const [totalAll, setTotalAll] = useState(0);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -31,24 +28,17 @@ const CheckoutScreeen = ({ route, navigation }) => {
     }
     fetchCartData();
     fetchUserData();
-
-    setTotalAll(total + adminFee);
-    // cartData.forEach((obj) => {
-    //   const items = obj.items;
-    //   items.forEach((item) => {
-    //     console.log(item.product["_id"], "product items");
-    //     console.log(item.quantity, "product items");
-    //   });
-    // });
+    // setTotalAll(total + adminFee);
+    console.log(userData, userData);
   }, [isAuthenticated, token, authMe, navigation]);
 
   const fetchUserData = async () => {
-    try {
-      const result = await authMe(token);
+    const response = await authMe(token);
+    const result = response.data;
+    if (result && result.data) {
       setUserData(result.data);
-      setIsLoading(false);
-    } catch (error) {
-      console.error(error);
+    } else {
+      setError("Failed to fetchUserData: No items found in response");
     }
   };
 
@@ -70,7 +60,7 @@ const CheckoutScreeen = ({ route, navigation }) => {
   };
 
   const handleCheckout = () => {
-    navigation.navigate("PaymentScreen", { total: totalAll });
+    navigation.navigate("PaymentScreen", { total: totalAmount });
   };
 
   if (isLoading) {
@@ -104,19 +94,19 @@ const CheckoutScreeen = ({ route, navigation }) => {
         editable={false}
       />
 
-      <Text style={styles.label}>Admin Fee</Text>
+      <Text style={styles.label}>Delivery Fee</Text>
       <TextInput
         style={styles.input}
-        placeholder="APP Fee"
-        value={`Rp ${adminFee.toLocaleString()}`}
+        placeholder="Delivery Fee"
+        value={`Rp ${deliveryFee.toLocaleString()}`}
         editable={false}
       />
 
-      <Text style={styles.label}>Total</Text>
+      <Text style={styles.label}>Total Amount</Text>
       <TextInput
         style={styles.input}
-        placeholder="Total"
-        value={`Rp ${totalAll.toLocaleString()}`}
+        placeholder="Total Amount"
+        value={`Rp ${totalAmount.toLocaleString()}`}
         editable={false}
       />
 

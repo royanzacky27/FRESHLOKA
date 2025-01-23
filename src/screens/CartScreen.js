@@ -12,13 +12,16 @@ import { useAuth } from "../contexts/AuthContext";
 import { useAssets } from "../contexts/AssetsContext";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useCart } from "../contexts/CartContext";
+import { CHECKOUT_URL } from "../config/constants";
+import axios from "axios";
 
 const CartScreen = ({ navigation }) => {
   const { isAuthenticated, token } = useAuth();
   const { assets } = useAssets();
-  const { productsInCart, fetchCartData, totalAmount } = useCart();
+  const { cartId, cartItems, productsInCart, fetchCartData, totalAmount } =
+    useCart();
   const [isLoading, setIsLoading] = useState(true);
-
+  const [invoiceData, setInvoiceData] = useState(null);
   useEffect(() => {
     if (!isAuthenticated) {
       navigation.replace("Auth");
@@ -34,8 +37,33 @@ const CartScreen = ({ navigation }) => {
     console.log(id, "remove");
   };
 
-  const handleCheckout = () => {
-    navigation.navigate("CheckoutScreen", { total: totalAmount });
+  const handleCheckout = async () => {
+    await axios
+      .post(
+        CHECKOUT_URL,
+        {
+          cartId,
+          deliveryTime: 45,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((response) => {
+        const result = response.data;
+        if (result && result.data) {
+          const data = result.data;
+          setInvoiceData(data);
+          navigation.navigate("CheckoutScreen", invoiceData);
+        } else {
+          setError("Failed to checkout cartId: No items found in response");
+        }
+      })
+      .catch((err) => {
+        console.error("Error checkout cartId:", err);
+      });
   };
 
   const increaseQuantity = (id) => {

@@ -69,14 +69,19 @@ router.get("/", authenticateToken, checkTokenBlacklist, async (req, res) => {
     });
   }
 });
+
 router.post("/", authenticateToken, checkTokenBlacklist, async (req, res) => {
   try {
     const { items } = req.body;
     const userId = req.user._id;
 
-    let cart = await Cart.findOne({ createdBy: userId });
+    let cart = await Cart.findOne({
+      createdBy: userId,
+      status: "CHECKOUT",
+    });
+
     if (!cart) {
-      cart = new Cart({ createdBy: userId, items: [] });
+      cart = new Cart({ createdBy: userId, items: [], status: "CHECKOUT" });
     }
 
     for (let item of items) {
