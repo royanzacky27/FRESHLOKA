@@ -157,7 +157,9 @@ const HomeScreen = ({ navigation }) => {
               />
               <Text style={styles.productName}>{item.name}</Text>
               <View style={styles.productInfoRow}>
-                <Text style={styles.productPrice}>Rp {item.price}</Text>
+                <Text
+                  style={styles.productPrice}
+                >{`Rp ${item.price.toLocaleString()}/pcs`}</Text>
                 <Text style={styles.productStock}>{item.stock} pcs</Text>
               </View>
             </TouchableOpacity>
@@ -304,13 +306,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   productPrice: {
-    fontSize: 16,
     fontWeight: "bold",
     color: "#2E7D32",
   },
   productStock: {
-    fontSize: 16,
-    color: "#888",
+    fontSize: 12,
+    color: "grey",
   },
   navigationContainer: {
     flexDirection: "row",

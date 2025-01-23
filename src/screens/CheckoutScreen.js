@@ -13,7 +13,7 @@ import { CART_URL } from "../config/constants";
 import axios from "axios";
 
 const CheckoutScreeen = ({ route, navigation }) => {
-  const param = route.param;
+  const { total } = route.params;
   const { isAuthenticated, token, authMe } = useAuth();
   const { assets } = useAssets();
 
@@ -22,7 +22,7 @@ const CheckoutScreeen = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [deliveryTime, setDeliveryTime] = useState(30);
   const [adminFee, setAdminFee] = useState(1500);
-  const [total, setTotal] = useState(0);
+  const [totalAll, setTotalAll] = useState(0);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -30,6 +30,8 @@ const CheckoutScreeen = ({ route, navigation }) => {
     }
     fetchCartData();
     fetchUserData();
+
+    setTotalAll(total + adminFee);
     // cartData.forEach((obj) => {
     //   const items = obj.items;
     //   items.forEach((item) => {
@@ -67,7 +69,7 @@ const CheckoutScreeen = ({ route, navigation }) => {
   };
 
   const handleCheckout = () => {
-    navigation.navigate("PaymentScreen", { total });
+    navigation.navigate("PaymentScreen", { total: totalAll });
   };
 
   if (isLoading) {
@@ -105,7 +107,7 @@ const CheckoutScreeen = ({ route, navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="APP Fee"
-        value={`Rp ${adminFee}`}
+        value={`Rp ${adminFee.toLocaleString()}`}
         editable={false}
       />
 
@@ -113,7 +115,7 @@ const CheckoutScreeen = ({ route, navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Total"
-        value={`Rp ${total}`}
+        value={`Rp ${totalAll.toLocaleString()}`}
         editable={false}
       />
 

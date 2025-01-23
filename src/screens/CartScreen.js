@@ -19,12 +19,12 @@ const CartScreen = ({ navigation }) => {
   const { assets } = useAssets();
   const [cartData, setCartData] = useState([]);
   const [cartDataItems, setcartDataItems] = useState([]);
-
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!isAuthenticated) {
       navigation.replace("Auth");
+      return;
     }
     fetchCartData();
 
@@ -94,7 +94,7 @@ const CartScreen = ({ navigation }) => {
   };
 
   const handleCheckout = () => {
-    navigation.navigate("CheckoutScreen");
+    navigation.navigate("CheckoutScreen", { total: totalAmount });
   };
 
   const increaseQuantity = (id) => {
@@ -140,7 +140,9 @@ const CartScreen = ({ navigation }) => {
             <Image source={item.image} style={styles.productImage} />
             <View style={styles.itemDetails}>
               <Text style={styles.productName}>{item.name}</Text>
-              <Text style={styles.productPrice}>Rp {item.price}/pcs</Text>
+              <Text style={styles.productPrice}>
+                {`Rp ${item.price.toLocaleString()}/pcs`}
+              </Text>
               <View style={styles.quantityContainer}>
                 <TouchableOpacity onPress={() => decreaseQuantity(item.id)}>
                   <AntDesign name="minuscircleo" size={16} color="black" />

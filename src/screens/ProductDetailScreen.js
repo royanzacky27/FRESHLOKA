@@ -32,6 +32,7 @@ const ProductDetailScreen = ({ route, navigation, addToCart }) => {
   useEffect(() => {
     if (!isAuthenticated) {
       navigation.replace("Auth");
+      return;
     }
   }, [isAuthenticated, navigation]);
 
@@ -51,7 +52,6 @@ const ProductDetailScreen = ({ route, navigation, addToCart }) => {
         );
         const result = response.data;
         if (response.status === 201) {
-          console.log(result.data);
           Alert.alert(
             "Cart Updated",
             "The item has been successfully added to your cart.",
@@ -91,15 +91,10 @@ const ProductDetailScreen = ({ route, navigation, addToCart }) => {
       />
 
       <View style={styles.productInfoRow}>
-        <View style={styles.productInfoRow}>
-          <Text style={styles.productInfoValue}>Rp {product.price} </Text>
-          <Text style={styles.productInfoLabel}>/ pcs</Text>
-        </View>
-
-        <View style={styles.productInfoRow}>
-          <Text style={styles.productInfoLabel}>Stocks: </Text>
-          <Text style={styles.productInfoValue}>{product.stock} pcs</Text>
-        </View>
+        <Text style={styles.productInfoValue}>
+          {`Rp ${product.price.toLocaleString()}/pcs`}
+        </Text>
+        <Text style={styles.productInfoLabel}>{`${product.stock} pcs`}</Text>
       </View>
 
       <View style={styles.productInfoRow2}>
@@ -107,8 +102,10 @@ const ProductDetailScreen = ({ route, navigation, addToCart }) => {
       </View>
 
       <View style={styles.cartInfoRow}>
-        <Text style={styles.cartInfoLabel}>Total bayar: </Text>
-        <Text style={styles.cartInfoValue}>Rp {product.price * quantity}</Text>
+        <Text style={styles.cartInfoLabel}>Ammount Total </Text>
+        <Text style={styles.cartInfoValue}>
+          {`Rp ${(product.price * quantity).toLocaleString()}`}
+        </Text>
       </View>
 
       <View style={styles.quantityContainer}>
@@ -176,13 +173,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   productInfoValue: {
+    fontSize: 16,
     fontWeight: "bold",
     color: "#2E7D32",
-    fontSize: 16,
   },
   productInfoLabel: {
-    color: "grey",
     fontSize: 16,
+    color: "grey",
   },
   cartInfoRow: {
     fontWeight: "bold",
