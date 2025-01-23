@@ -73,6 +73,7 @@ export const CartProvider = ({ children }) => {
           setProductInCart(products);
           setTotalAmount(totalAmount);
         } else {
+          setCartId(null);
           setCartItems([]);
           setProductInCart([]);
           setTotalAmount(0);

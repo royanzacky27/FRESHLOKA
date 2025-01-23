@@ -32,6 +32,7 @@ const CartScreen = ({ navigation }) => {
     const loadCartData = async () => {
       try {
         await fetchCartData(token);
+        console.log(cartId, "cartId");
       } catch (error) {
         console.error("Error loading cart data:", error);
       } finally {
