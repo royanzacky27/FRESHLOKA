@@ -35,7 +35,13 @@ const ProductDetailScreen = ({ route, navigation }) => {
       "Cart Updated",
       "The item has been successfully added to your cart.",
       [
-        { text: "Cancel", style: "cancel" },
+        {
+          text: "Cancel",
+          style: "cancel",
+          onPress: () => {
+            navigation.navigate("Home");
+          },
+        },
         {
           text: "Check Carts",
           onPress: () => {
